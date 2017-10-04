@@ -1,0 +1,3 @@
+/home/maceluch/Desktop/modem/build/CMakeFiles/rebuild_cache.dir
+/home/maceluch/Desktop/modem/build/CMakeFiles/edit_cache.dir
+/home/maceluch/Desktop/modem/build/CMakeFiles/Modulator.dir

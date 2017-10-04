@@ -1,0 +1,26 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/maceluch/Desktop/modem/main.cpp
+iostream
+-
+string
+-
+complex
+-
+array
+-
+symbol.hpp
+/home/maceluch/Desktop/modem/symbol.hpp
+
+/home/maceluch/Desktop/modem/symbol.hpp
+iostream
+-
+array
+-
+
