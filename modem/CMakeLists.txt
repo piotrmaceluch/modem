@@ -31,12 +31,12 @@ project(Modulator)
 
 ###########################################
 
-
-
 #ten folder bedzie zaincludowany
 
+include_directories("${PROJECT_BINARY_DIR}")
+
 add_executable(Modulator main.cpp)
-
-
+#add_executable(Modulator functions.cpp)
+#add_executable(Modulator symbol.cpp)
 
 

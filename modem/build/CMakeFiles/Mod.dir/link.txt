@@ -1,0 +1,1 @@
+/usr/bin/c++    -rdynamic CMakeFiles/Mod.dir/functions.cpp.o  -o Mod 

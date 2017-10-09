@@ -5,7 +5,5 @@
 
 
 
-void set(Symbol tab[])
-{
-	
-}
+
+
