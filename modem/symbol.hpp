@@ -14,23 +14,34 @@ namespace modulator
 	double phase;
 	double frequency;
 	double angularVelocity;
-	double re;
-	double im;
-
-
+	double real;
+	double imaginary;
+	double z;
+	double generatorValue;
+	double realGeneratorValue;
+	double imaginaryGeneratorValue;
+	
 	Symbol( double amplitude = 0.0, 
 		double phase = 0.0,
 		double frequency = 0.0,
 		double angularVelocity = 0.0,
-		double re = 0.0,
-		double im = 0.0)
+		double real = 0.0,
+		double imaginary = 0.0, 
+		double z = 0.0,
+		double generatorValue = 0.0,
+		double realGeneratorValue = 0.0,
+		double imaginaryGeneratorValue = 0.0)
 	{
 		this-> amplitude = amplitude;
 		this-> phase = phase;
 		this-> frequency = frequency;
 		this-> angularVelocity = angularVelocity;
-		this-> re = re;
-		this-> im = im;
+		this-> real = real;
+		this-> imaginary = imaginary;
+		this-> z = z;
+		this-> generatorValue = generatorValue;
+		this-> realGeneratorValue = realGeneratorValue;
+		this-> imaginaryGeneratorValue = imaginaryGeneratorValue;
 	}
 
 	Symbol(Symbol &X)
@@ -39,27 +50,40 @@ namespace modulator
 		this-> phase = phase;
 		this-> frequency = frequency;
 		this-> angularVelocity = angularVelocity;
-		this-> re = re;
-		this-> im = im;
+		this-> real = real;
+		this-> imaginary = imaginary;
+		this-> z = z;
+		this-> generatorValue = generatorValue;
+		this-> realGeneratorValue = realGeneratorValue;
+		this-> imaginaryGeneratorValue = imaginaryGeneratorValue;
 	}
 	
 	~Symbol() 
 	{}
 	
  	void showValues();
-  };
 
-  void Symbol::showValues()
-  {
-	std::cout << "Input bits: " << inputBits[0] 
-				    << inputBits[1] 
-				    << inputBits[2] 
-				    << inputBits[3] << std::endl;
-	std::cout << "Amplitude: " << amplitude << std::endl;
-	std::cout << "Phase: " 	   << phase     << std::endl;
-	std::cout << "Frequency: " << frequency << std::endl;
-	std::cout << "AngularVelocity: " << angularVelocity << std::endl;
-	std::cout << std::endl;	
-  }
 
+  }; // class Symbol
 } //namespace modulator
+
+  
+void modulator::Symbol::showValues()
+{	
+	std::cout << "Input bits: ";
+	for (int i=0 ; i<4 ; i++)
+	{
+		std::cout << inputBits[i];
+	}
+	std::cout << std::endl;
+	std::cout << "Real: " 		<< real << std::endl;
+	std::cout << "Imaginary: " 	<< imaginary << std::endl;
+	std::cout << "Amplitude: " 	<< amplitude << std::endl;
+	std::cout << "Phase[degrees]: " 	   	<< phase << std::endl;
+	std::cout << "Frequency[kHz]: " 	<< frequency << std::endl;
+	std::cout << "AngularVelocity: "<< angularVelocity << std::endl;
+	std::cout << "Z: " 	   	<< z << std::endl;
+	std::cout << "GeneratorValue: " << generatorValue << std::endl;		
+	std::cout << std::endl;	
+}
+

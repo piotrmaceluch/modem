@@ -1,6 +1,7 @@
-#include<iostream>
-#include<string>
-#include<sylbol.hpp>
+#include <iostream>
+#include <string>
+
+#include "symbol.hpp"
 
 
 
