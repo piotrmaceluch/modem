@@ -11,43 +11,54 @@
 
 int main(int argc, char** argv)
 {
-
     //testing::InitGoogleTest(&argc, argv);
-    //return RUN_ALL_TESTS(); 
+    //return RUN_ALL_TESTS();
 
-	const int inputBits[16] = {0,0,1,1,0,1,0,1,0,0,1,0,1,1,1,1};
-	const double t = 66.7e-06; //  duration of symbol
-	const double frequencies[4] = {15000.0, 30000.0, 45000.0, 60000.0};
+        const int inputBits[16] = {0,0,1,0, 1,1,1,0, 1,0,0,1, 0,1,0,1};
+        const int M = 4; //  number of subcarriers
+        const int N = 16; //  number of samples in time and frequency domain + size of DFT
+        const double frequencies[M] = {15, 30, 45, 60};
+        double time[N]; //  time array
+        std::complex<double> summary[N] = {}; //  array for output samples of subcarriers
+        modulator::Symbol scArray[M]; //  table for 4 subcarriers
 
-	modulator::Symbol scArray[4]; //  table for 4 subcarriers
-	
-	setInputBits(scArray, inputBits);
-	setFrequencies(scArray, frequencies);
-	calculateAmplitudeAndPhase(scArray);
-	convertComplexToPolar(scArray);
+        setInputBits(scArray, inputBits);
+        setFrequencies(scArray, frequencies);
+        calculateAmplitudeAndPhase(scArray);
+        convertComplexToPolar(scArray);
         setAngularVelocity(scArray);
         setZ(scArray);
-        generateIDFT(scArray, t);
-	showValuesForEverySymbol(scArray);
+        setTime(time, N);
+        generator(scArray, M, N, time);
+        
+        showValuesForEverySymbol(scArray);
+        std::cout << " IDFT(sum of subcarriers) " << std::endl;
+        IDFT(scArray, summary, M, N);
+        for (int i=0 ; i<N ; i++)
+                std::cout << summary[i] << std::endl;
 
-        long double sum = sumOfSubcarriers(scArray);
-
-        std::cout << "Suma na wyjsciu demodulatora: " << sum << std::endl;
-
-        int N = 4;
-        double fAnalysis[N];
-        std::cout << "fAnalysis: " ;
-        for(int i=0 ; i<N ; i++)
-        {
-            fAnalysis[m] = scArray[i].angularVelocity;
-            std::cout << fAnalysis[i] << "  ";
-        }
-
-
-
-        DFT(sum, int m, int N, scArray);
-
+        double output[N]; //  Real part of summary of samples
+        
         std::cout << std::endl;
+        std::cout << std::endl;
+
+        realPartofOutput(summary, output, M, N);
+        std::cout << " Real part of sum of subcarriers " << std::endl;
+        for (int i=0 ; i<N ; i++)
+        {
+                std::cout << output[i] << std::endl;
+        }
+        std::cout << "=================================" << std::endl;
+
+        std::complex<double> DFToutput[N];
+        calculateDFT(DFToutput, N, output);
+
+        double fAnalysis[N];
+        showFAnalysis(fAnalysis, N, scArray);
+
+
+        showDFT(DFToutput, M, N);
+        calculateAmplitudeAndPhase(DFToutput, M, N);
+
+
 }
-
-
