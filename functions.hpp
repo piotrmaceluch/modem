@@ -10,12 +10,11 @@ void setIm (modulator::Symbol scArray[]);
 void convertComplexToPolar (modulator::Symbol scArray[]);
 void setAngularVelocity (modulator::Symbol scArray[]);
 void setZ (modulator::Symbol scArray[]);
-//void setTime(double t[], const int N);
-//void generateIDFT (modulator::Symbol scArray[], int M, int N, double t[]);
-
-//void sumOfSubcarriers (modulator::Symbol scArray[], double summary[], int M, int N);
-
-//void showFAnalysis(double fAnalysis[], int N, modulator::Symbol scArray[]);
-//void calculateDFT (double DFT[2][1024], int N, modulator::Symbol scArray[]);
-//void showDFT(double DFT[][1024]);
-//void calculateAmplitudeAndPhase (double DFT[2][1024]);
+void setTime(double t[], const int N);
+void generator (modulator::Symbol scArray[], int M, int N, double t[]);
+void IDFT(modulator::Symbol scArray[], std::complex<double> summary[], int M, int N);
+void realPartofOutput(std::complex<double> summary[], double output[], int M, int N);
+void showFAnalysis(double fAnalysis[], int N, modulator::Symbol scArray[]);
+void calculateDFT (std::complex<double> DFToutput[], int N, double output[]);
+void showDFT(std::complex<double> DFToutput[], int M, int N);
+void calculateAmplitudeAndPhase (std::complex<double> DFToutput[], int M, int N);

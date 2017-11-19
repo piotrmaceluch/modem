@@ -101,6 +101,9 @@ void convertComplexToPolar(modulator::Symbol scArray[])
     {
         scArray[i].amplitude = std::abs(scArray[i].complex);
         scArray[i].phase = std::arg(scArray[i].complex);
+        scArray[i].phase < 0
+        ?   scArray[i].phase = 2*M_PI + scArray[i].phase
+        :   scArray[i].phase = scArray[i].phase;
     }
 }
 
@@ -113,123 +116,118 @@ void setAngularVelocity(modulator::Symbol scArray[])
 }
 
 void setZ(modulator::Symbol scArray[])
-{
-    double a, b;
-    a = double(scArray[0].amplitude * cos(scArray[0].phase));
-    b = double(scArray[0].amplitude * sin(scArray[0].phase));
-    std::cout << "amplitude: " << scArray[0].amplitude << std::endl;
-    std::cout << "phase: " << scArray[0].phase << std::endl;
-    std::cout << "A*cos(phase): " << double(a) << std::endl;
-    std::cout << "A*sin(phase): " << (double)b << std::endl;
-    std::complex<double> temp(a, b);
-    scArray[0].z = temp;
-    std::cout << "a + jb: " << temp << std::endl;
-    std::cout << "z = temp? " << std::endl;
-    std::cout << temp << " == " << scArray[0].z << std::endl << std::endl;
-
-//    for (int i=0 ; i<4 ; i++)
-//    {
-
-//        std::cout << "amplitude: " << scArray[i].amplitude << std::endl;
-//        std::cout << "phase: " << scArray[i].phase << std::endl;
-//        std::cout << "A*cos(phase): " << (double)a << std::endl;
-//        std::cout << "A*sin(phase): " << (double)b << std::endl;
-//        std::complex<double> temp(a, b);
-//        scArray[i].z = temp;
-//        std::cout << "a + jb: " << temp << std::endl;
-//        std::cout << "z = temp? " << std::endl;
-//        std::cout << temp << " == " << scArray[i].z << std::endl << std::endl;
-//    }
+{// operuję na wartościach w formacie a + ib, więc zamiana na postać wykładniczą nie jest mi potrzebna
+ // oczywiście dostaję tu te same wartości co Re{z} oraz Im{z}, z mapowania na konstelacje.
+   for (int i=0 ; i<4 ; i++)
+   {
+        double a=0.0, b=0.0;
+        a = scArray[i].amplitude * cos(scArray[i].phase);
+        b = scArray[i].amplitude * sin(scArray[i].phase);
+        scArray[i].z = {a, b};
+   }
 }
 
-//void setTime(double t[], const int N)
-//{
-//    double fs = 1000.0;
-//    double ts = 1/fs;
-//    double L = 100; //liczba próbek
-//    for (int i=0 ; i<N ; i++)
-//    {
-//        t[i] = ts * i;
-//    }
-//}
+void setTime(double t[], const int N)
+{
+   double fs = 200.0; // Ponad 2 razy większa od największej częstotliwości zawartej w sygnale, czyli > 2*60kHz
+   double ts = 1/fs;
+   //double L = 100; //liczba próbek
+   for (int i=0 ; i<N ; i++)
+   {
+       t[i] = ts * i;
+       std::cout << t[i] << ", ";
+       if (i%4 == 3)
+            std::cout << std::endl;
+   }
+}
 
-//void generateIDFT(modulator::Symbol scArray[], int M, int N, double t[])
-//{
-//    for (int i=0 ; i<M ; i++)
-//    {
-//        for (int j=0 ; j<N ; j++)
-//        {
-//            scArray[i].generatorValue[j] = scArray[i].z[0] * std::exp(scArray[i].angularVelocity * t[j]);
-//            scArray[i].generatorValue[j] = scArray[i].z[1] * std::exp(scArray[i].angularVelocity * t[j]);
-//        }
-//    }
-//}
+void generator(modulator::Symbol scArray[], int M, int N, double t[])
+{
+   for (int i=0 ; i<M ; i++)
+   {
+       for (int j=0 ; j<N ; j++)
+       {
+           //scArray[i].generatorValue[j] = scArray[i].z * exp(scArray[i].angularVelocity * t[j]);
 
-//void sumOfSubcarriers(modulator::Symbol scArray[], double summary[], int M, int N)
-//{
-//    for (int i=0 ; i<M ; i++)
-//    {
-//        for(int j=0 ; j<N ; j++)
-//        {
-//            summary[j] += scArray[i].generatorValue[j];
-//        }
-//    }
-//    std::cout << std::endl;
-//}
+            double a=0.0, b=0.0;
+            a = cos(scArray[i].angularVelocity * t[j]);
+            b = sin(scArray[i].angularVelocity * t[j]);
+            std::complex<double> R = {a,b};
+            scArray[i].generatorValue[j] = scArray[i].z * R;
+       }
+   }
+}
+
+void IDFT(modulator::Symbol scArray[], std::complex<double> summary[], int M, int N)
+{
+   for (int i=0 ; i<M ; i++)
+   {
+       for(int j=0 ; j<N ; j++)
+       {
+           summary[j] += scArray[i].generatorValue[j];
+       }
+   }
+   std::cout << std::endl;
+}
+
+void realPartofOutput(std::complex<double> summary[], double output[], int M, int N)
+{
+    for (int i=0 ; i<N ; i++)
+    {
+        output[i] = summary[i].real();
+    }
+
+}
 //============================================================================================================
 
-//void showFAnalysis (double fAnalysis[], int N, modulator::Symbol scArray[])
-//{
-//    std::cout << std::endl << "fAnalysis: " << std::endl;
-//    for(int i=0 ; i<N ; i++)
-//    {
-//        fAnalysis[i] = scArray[i].angularVelocity;
-//        std::cout << fAnalysis[i] << "  ";
-//    }
-//    std::cout << std::endl << std::endl;
-//}
+void showFAnalysis (double fAnalysis[], int N, modulator::Symbol scArray[])
+{
+    std::cout << std::endl << "fAnalysis: " << std::endl;
+    for(int i=0 ; i<N ; i++)
+    {
+        fAnalysis[i] = scArray[i].angularVelocity;
+        std::cout << fAnalysis[i] << "  ";
+    }
+    std::cout << std::endl << std::endl;
+}
 
-//void calculateDFT (double DFT[][4], int N, modulator::Symbol scArray[])
-//{	// n-ilosc probek wejsciowych
-//        // m-indeks wartosci wyjsciowych
-//        // N-ilosc probek wejsciowych oraz wyjsciowych / rozdzielczosc
-//    for ( int m=0 ; m<N ; m++ )
-//    {
-//        for ( int n=0 ; n<N ; n++ )
-//        {
-//            DFT[0][m] = scArray[m].z * cos(2*M_PI * n * m/N);
-//            DFT[1][m] = scArray[m].z * sin(2*M_PI * n * m/N);
-//        }
-//    }
-//}
+void calculateDFT (std::complex<double> DFToutput[], int N, double output[])
+{	// n-ilosc probek wejsciowych
+       // m-indeks wartosci wyjsciowych
+       // N-ilosc probek wejsciowych oraz wyjsciowych / rozdzielczosc
+    for ( int m=0 ; m<N ; m++ )
+    {
+        for ( int n=0 ; n<N ; n++ )
+        {
+            double a = output[n] * cos(2*M_PI * n * m/N);
+            double b = output[n] * sin(2*M_PI * n * m/N);
+            DFToutput[m] = {a, b};
+        }
+    }
+}
 
-////void sample(modulator:Symbol scArray[])
-////{
-////	double samples[4] =
-////}
+void showDFT (std::complex<double> DFToutput[], int M, int N) //  NAPRAWIĆ
+{
+std::cout << "wartości DFT:" << std::endl;
+   for (int i=0 ; i<M ; i++)
+   {
+       for (int j=0 ; j<N ; j++)
+       {
+           std::cout << DFToutput[j] << std::endl;
+       }
+       std::cout << std::endl;
+   }
+}
 
-//void showDFT (double DFT[][4])
-//{
-//std::cout << "wartości DFT:" << std::endl;
-//    for (int i=0 ; i<4 ; i++)
-//    {
-//        for (int j=0 ; j<2 ; j++)
-//        {
-//            std::cout << DFT[j][i] << ", \t";
-//        }
-//        std::cout << std::endl;
-//    }
-//}
-
-//void calculateAmplitudeAndPhase (double DFT[][4])
-//{
-//    std::cout << std::endl << "Amplituda i faza: " << std::endl;
-//    for (int i=0 ; i<4 ; i++)
-//    {
-//        double a = DFT[0][i];
-//        double b = DFT[1][i];
-//        std::complex<double> temp (a, b);
-//        std::cout << abs(temp) << "e^";
-//        std::cout << arg(temp) << std::endl;
-//    }
-//}
+void calculateAmplitudeAndPhase (std::complex<double> DFToutput[], int M, int N)
+{
+   std::cout << std::endl << "Amplituda i faza: " << std::endl;
+   for (int i=0 ; i<N ; i++)
+   {
+       double a = DFToutput[i].real();
+       double b = DFToutput[i].imag();
+       std::complex<double> temp = {a, b};
+       std::cout << abs(temp) << "e^";
+       std::cout << arg(temp) << std::endl;
+   }
+}
