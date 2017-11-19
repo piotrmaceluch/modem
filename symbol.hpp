@@ -3,14 +3,17 @@
 #include<iostream>
 #include<array>
 #include<complex>
+
+
 namespace modulator
 {
 
   const std::complex<double> i(0, 1);
+  static const int N = 16;
 
   class Symbol
   {
-    public:
+     public:
 	int inputBits[4];
         double real;
         double imaginary;
@@ -18,9 +21,10 @@ namespace modulator
 	double phase;
 	double frequency;
 	double angularVelocity;
-        double z;
+        std::complex<double> z;
+        double samples[N];
+        double generatorValue[N];
         std::complex<double> complex;
-        double generatorValue;
 	
         Symbol( double real = 0.0,
                 double imaginary = 0.0,
@@ -28,18 +32,19 @@ namespace modulator
                 double phase = 0.0,
                 double frequency = 0.0,
                 double angularVelocity = 0.0,
-                double z = 0.0,
-                std::complex<double> complex = (0.0, 0.0),
-                double generatorValue = 0.0 )
+                double z[2] = {},
+                double generatorValue[N] = {},
+                std::complex<double> complex = (0.0, 0.0))
 	{
-                this-> real = real;
-                this-> imaginary = imaginary;
-                this-> amplitude = amplitude;
-                this-> phase = phase;
-                this-> frequency = frequency;
-                this-> angularVelocity = angularVelocity;
-                this-> z = z;
-                this-> generatorValue = generatorValue;
+            this-> real = real;
+            this-> imaginary = imaginary;
+            this-> amplitude = amplitude;
+            this-> phase = phase;
+            this-> frequency = frequency;
+            this-> angularVelocity = angularVelocity;
+            //this-> z = z;
+            //this-> generatorValue = generatorValue;
+            this-> complex = complex;
 	}
         /*
 	Symbol(Symbol &X)

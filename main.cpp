@@ -13,41 +13,42 @@ int main(int argc, char** argv)
 {
 
     //testing::InitGoogleTest(&argc, argv);
-    //return RUN_ALL_TESTS(); 
+    //return RUN_ALL_TESTS();
 
-	const int inputBits[16] = {0,0,1,1,0,1,0,1,0,0,1,0,1,1,1,1};
-	const double t = 66.7e-06; //  duration of symbol
-	const double frequencies[4] = {15000.0, 30000.0, 45000.0, 60000.0};
+        const int inputBits[16] = {0,0,1,1, 0,1,0,1, 0,0,1,0, 1,1,1,1};
+        const int M = 4; // number of subcarriers
+        const int N = 16;
+        const double frequencies[M] = {15, 30, 45, 60};
+        double time[N]; // time array
 
-	modulator::Symbol scArray[4]; //  table for 4 subcarriers
-	
-	setInputBits(scArray, inputBits);
-	setFrequencies(scArray, frequencies);
-	calculateAmplitudeAndPhase(scArray);
-	convertComplexToPolar(scArray);
+        modulator::Symbol scArray[M]; //  table for 4 subcarriers
+
+        setInputBits(scArray, inputBits);
+        setFrequencies(scArray, frequencies);
+        calculateAmplitudeAndPhase(scArray);
+        convertComplexToPolar(scArray);
         setAngularVelocity(scArray);
         setZ(scArray);
-        generateIDFT(scArray, t);
-	showValuesForEverySymbol(scArray);
+//        setTime(time, N);
+//        generateIDFT(scArray, M, N, time);
+//        showValuesForEverySymbol(scArray);
 
-        long double sum = sumOfSubcarriers(scArray);
+//        double summary[N] = {};
+//        sumOfSubcarriers(scArray, summary, M, N); // NIEUŻYTE
+//        for (int i=0 ; i<16 ; i++)
+//          std::cout << summary[i] << ", ";
+//        std::cout << "Suma na wyjsciu demodulatora: " << std::endl << sum << std::endl;
 
-        std::cout << "Suma na wyjsciu demodulatora: " << sum << std::endl;
+        std::cout << "=================================" << std::endl;
 
-        int N = 4;
-        double fAnalysis[N];
-        std::cout << "fAnalysis: " ;
-        for(int i=0 ; i<N ; i++)
-        {
-            fAnalysis[m] = scArray[i].angularVelocity;
-            std::cout << fAnalysis[i] << "  ";
-        }
+//        double DFToutput[2][N];
+//        calculateDFT (DFToutput, N, scArray);
+
+//        double fAnalysis[N];
+
+//        showFAnalysis(fAnalysis, N, scArray);
+//        showDFT(DFToutput);
+//        calculateAmplitudeAndPhase(DFToutput);
 
 
-
-        DFT(sum, int m, int N, scArray);
-
-        std::cout << std::endl;
 }
-
-
