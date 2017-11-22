@@ -127,17 +127,16 @@ void setZ(modulator::Symbol scArray[])
    }
 }
 
-void setTime(double t[], const int N)
+void setTime(double t[], const int N, double fs, double ts)
 {
-   double fs = 200.0; // Ponad 2 razy większa od największej częstotliwości zawartej w sygnale, czyli > 2*60kHz
-   double ts = 1/fs;
-   //double L = 100; //liczba próbek
+   //   0 : ts : (N-1)*ts
+
    for (int i=0 ; i<N ; i++)
    {
        t[i] = ts * i;
-       std::cout << t[i] << ", ";
-       if (i%4 == 3)
-            std::cout << std::endl;
+    //    std::cout << t[i] << ", ";
+    //    if (i%4 == 3)
+    //         std::cout << std::endl;
    }
 }
 
@@ -148,10 +147,9 @@ void generator(modulator::Symbol scArray[], int M, int N, double t[])
        for (int j=0 ; j<N ; j++)
        {
            //scArray[i].generatorValue[j] = scArray[i].z * exp(scArray[i].angularVelocity * t[j]);
-
             double a=0.0, b=0.0;
-            a = cos(scArray[i].angularVelocity * t[j]);
-            b = sin(scArray[i].angularVelocity * t[j]);
+            a = scArray[i].amplitude * cos(scArray[i].angularVelocity * t[j]);
+            b = scArray[i].amplitude * sin(scArray[i].angularVelocity * t[j]);
             std::complex<double> R = {a,b};
             scArray[i].generatorValue[j] = scArray[i].z * R;
        }
@@ -170,64 +168,74 @@ void IDFT(modulator::Symbol scArray[], std::complex<double> summary[], int M, in
    std::cout << std::endl;
 }
 
-void realPartofOutput(std::complex<double> summary[], double output[], int M, int N)
+void realPartofOutput(std::complex<double> summary[], double DFTinput[], int M, int N)
 {
     for (int i=0 ; i<N ; i++)
     {
-        output[i] = summary[i].real();
+        DFTinput[i] = summary[i].real();
     }
-
 }
 //============================================================================================================
 
-void showFAnalysis (double fAnalysis[], int N, modulator::Symbol scArray[])
+void setFAnalysis (double fAnalysis[], int N, modulator::Symbol scArray[], double fs, double ts)
 {
     std::cout << std::endl << "fAnalysis: " << std::endl;
     for(int i=0 ; i<N ; i++)
     {
-        fAnalysis[i] = scArray[i].angularVelocity;
-        std::cout << fAnalysis[i] << "  ";
+        fAnalysis[i] = i*fs/N;
+        std::cout << "Prazek " << i << ": " << fAnalysis[i] << std::endl;
     }
-    std::cout << std::endl << std::endl;
+    std::cout << std::endl;
 }
 
-void calculateDFT (std::complex<double> DFToutput[], int N, double output[])
-{	// n-ilosc probek wejsciowych
-       // m-indeks wartosci wyjsciowych
-       // N-ilosc probek wejsciowych oraz wyjsciowych / rozdzielczosc
+void calculateDFT (std::complex<double> DFToutput[], int N, double DFTinput[])
+{       // n-ilosc probek wejsciowych
+        // m-indeks wartosci wyjsciowych
+        // N-ilosc probek wejsciowych oraz wyjsciowych / rozdzielczosc
     for ( int m=0 ; m<N ; m++ )
     {
+        double a = 0.0;
+        double b = 0.0;
+
         for ( int n=0 ; n<N ; n++ )
         {
-            double a = output[n] * cos(2*M_PI * n * m/N);
-            double b = output[n] * sin(2*M_PI * n * m/N);
-            DFToutput[m] = {a, b};
+            a = DFTinput[n] *        cos(2*M_PI*m*n/N);
+            b = DFTinput[n] * (-1) * sin(2*M_PI*m*n/N);
+            
+            std::complex <double> temp = {a, b};
+
+            DFToutput[m] += temp;
         }
     }
 }
 
 void showDFT (std::complex<double> DFToutput[], int M, int N) //  NAPRAWIĆ
 {
-std::cout << "wartości DFT:" << std::endl;
-   for (int i=0 ; i<M ; i++)
-   {
-       for (int j=0 ; j<N ; j++)
-       {
-           std::cout << DFToutput[j] << std::endl;
-       }
-       std::cout << std::endl;
-   }
+    std::cout << "wartości DFT:" << std::endl;
+
+    for (int j=0 ; j<N ; j++)
+    {
+        std::cout << DFToutput[j] << std::endl;
+    }
+    std::cout << std::endl;
 }
 
 void calculateAmplitudeAndPhase (std::complex<double> DFToutput[], int M, int N)
 {
-   std::cout << std::endl << "Amplituda i faza: " << std::endl;
+   std::cout << std::endl << "Amplituda i faza: " << std::endl << std::endl;
    for (int i=0 ; i<N ; i++)
    {
        double a = DFToutput[i].real();
        double b = DFToutput[i].imag();
        std::complex<double> temp = {a, b};
-       std::cout << abs(temp) << "e^";
-       std::cout << arg(temp) << std::endl;
-   }
+       std::cout << "Prazek " << i <<": \tAmplituda: " << abs(temp) << std::endl;
+    }
+    std::cout << std::endl;
+    for (int i=0 ; i<N ; i++)
+    {
+       double a = DFToutput[i].real();
+       double b = DFToutput[i].imag();
+       std::complex<double> temp = {a, b};
+       std::cout << "Prazek " << i << ": \tFaza: " << std::arg(temp) << std::endl;
+    }
 }
