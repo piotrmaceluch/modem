@@ -183,7 +183,7 @@ void setFAnalysis (double fAnalysis[], int N, modulator::Symbol scArray[], doubl
     for(int i=0 ; i<N ; i++)
     {
         fAnalysis[i] = i*fs/N;
-        std::cout << "Prazek " << i << ": " << fAnalysis[i] << std::endl;
+        //std::cout << "Prazek " << i << ": " << fAnalysis[i] << std::endl;
     }
     std::cout << std::endl;
 }
@@ -196,14 +196,11 @@ void calculateDFT (std::complex<double> DFToutput[], int N, double DFTinput[])
     {
         double a = 0.0;
         double b = 0.0;
-
         for ( int n=0 ; n<N ; n++ )
         {
             a = DFTinput[n] *        cos(2*M_PI*m*n/N);
             b = DFTinput[n] * (-1) * sin(2*M_PI*m*n/N);
-            
             std::complex <double> temp = {a, b};
-
             DFToutput[m] += temp;
         }
     }
@@ -211,31 +208,39 @@ void calculateDFT (std::complex<double> DFToutput[], int N, double DFTinput[])
 
 void showDFT (std::complex<double> DFToutput[], int M, int N) //  NAPRAWIĆ
 {
-    std::cout << "wartości DFT:" << std::endl;
-
     for (int j=0 ; j<N ; j++)
     {
-        std::cout << DFToutput[j] << std::endl;
+        //std::cout << DFToutput[j] << std::endl;
     }
     std::cout << std::endl;
 }
 
-void calculateAmplitudeAndPhase (std::complex<double> DFToutput[], int M, int N)
+void calculateAmplitudeAndPhase (std::complex<double> DFToutput[], int M, int N, double fAnalysis[])
 {
-   std::cout << std::endl << "Amplituda i faza: " << std::endl << std::endl;
    for (int i=0 ; i<N ; i++)
    {
        double a = DFToutput[i].real();
        double b = DFToutput[i].imag();
-       std::complex<double> temp = {a, b};
-       std::cout << "Prazek " << i <<": \tAmplituda: " << abs(temp) << std::endl;
+       std::complex<double> temp = {a, b};    
+        
+       std::cout << std::fixed ;
+        std::cout << "Prazek: " << i 
+                 << " \tCzestotliwosc " << fAnalysis[i]
+                 << ": \tAmplituda " << abs(temp)
+                 << ": \tFaza " << std::arg(temp) << std::endl;
+       
+                 // DFToutput[i] = 2 * DFToutput.
+       //Mr = amplituda prążka  
+    //Mr = Ao*N/2  
+    // 2*Mr/N = Ao
     }
-    std::cout << std::endl;
+    std::cout << std::endl;   
+}
+
+void showOutput(std::complex<double> DFToutput[], int N, double fAnalysis[])
+{
     for (int i=0 ; i<N ; i++)
     {
-       double a = DFToutput[i].real();
-       double b = DFToutput[i].imag();
-       std::complex<double> temp = {a, b};
-       std::cout << "Prazek " << i << ": \tFaza: " << std::arg(temp) << std::endl;
+       
     }
 }

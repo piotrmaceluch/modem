@@ -7,7 +7,7 @@
 
 namespace modulator
 {
-  static const int N = 64;
+  static const int N = 128;
 
   class Symbol
   {

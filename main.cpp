@@ -23,7 +23,7 @@ int main(int argc, char** argv)
 
         const int inputBits[16] = {0,0,0,0, 1,1,1,1, 1,0,0,1, 1,0,1,0};
         const int M = 4; //  number of subcarriers
-        const int N = 64; //  number of samples in time and frequency domain + size of DFT
+        const int N = 128; //  number of samples in time and frequency domain + size of DFT
         const double frequencies[M] = {15.0, 30.0, 45.0, 60.0};
         double time[N]; //  time array for samples
         double fs = 120.0; // Ponad 2 razy większa od największej częstotliwości zawartej w sygnale, czyli > 2*60kHz
@@ -71,6 +71,8 @@ int main(int argc, char** argv)
         setFAnalysis(fAnalysis, N, scArray, fs, ts);
 
         showDFT(DFToutput, M, N);
-        calculateAmplitudeAndPhase(DFToutput, M, N);
+        calculateAmplitudeAndPhase(DFToutput, M, N, fAnalysis);
+
+        showOutput( DFToutput, N, fAnalysis);
 
 }
