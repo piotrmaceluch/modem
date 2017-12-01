@@ -4,5 +4,5 @@
 
 cmake -H. -Bbuild
 cmake --build build -- -j3
-./build/Modulator 
+./build/Modem
 

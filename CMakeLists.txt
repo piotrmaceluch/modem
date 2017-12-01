@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 2.8)
 
 #nazwa projektu
-project(Modulator)
+project(Modem)
 
 ############### MAKRA #####################
  
@@ -41,7 +41,9 @@ include_directories("${PROJECT_BINARY_DIR}")
 #enable_testing()
 
 
-add_executable(Modulator main.cpp)
+add_executable(Modem main.cpp)
+#add_executable(Modem functions.cpp)
+#add_executable(Modem Modulator.cpp)
 
 #add_executable(Modulator functions.cpp)
 #add_executable(Modulator symbol.cpp)

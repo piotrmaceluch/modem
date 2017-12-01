@@ -2,245 +2,320 @@
 #include <string>
 #include <complex>
 #include <math.h>
+#include <array>
+#include <vector>
+#include <numeric>
 
-#include "symbol.hpp"
 #include "functions.hpp"
-#include "complex"
 
+#include "Modem.hpp"
+#include "Modulator.hpp"
+#include "Demodulator.hpp"
 
+//typedef std::array<OFDM::Modulator,4> scArray_;
 
-void showValuesForEverySymbol(modulator::Symbol scArray[])
+// void showValues(std::vector<OFDM::Modulator> &modulatorVector,)
+// {
+//     for (int i=0 ; i<scArray.size() ; i++)
+//     {
+//         scArray[i].showValues();
+//     }
+// }
+
+template <typename T1>
+void setFrequencies(std::vector<T1> &Vector, const std::vector<double> &frequencies)
 {
-    for (int i=0 ; i<4 ; i++)
+    for (int i=0 ; i<Vector.size() ; i++)
     {
-        scArray[i].showValues();
+        Vector[i].frequency = frequencies[i];
     }
 }
 
-void setInputBits(modulator::Symbol scArray[], const int inputBits[])
+template <typename T>
+void setAngularVelocity (std::vector<T> &Vector, const std::vector<double> &frequencies)
+{
+    setFrequencies(Vector, frequencies);
+
+    for (int i=0 ; i<Vector.size() ; i++)
+        Vector[i].angularVelocity = 2*M_PI*Vector[i].frequency;
+}
+
+void setInputBits(std::vector<OFDM::Modulator> &modulatorVector, const std::vector<int> &inputBits,  const int bitsPerSymbol)
 {
     int k = 0;
-    for(int i=0 ; i<4 ; i++)
+    for (int i=0 ; i<modulatorVector.size() ; i++)
     {
-        for(int j=0 ; j<4 ; j++)
+        for (int j=0 ; j<bitsPerSymbol ; j++)
         {
-            scArray[i].inputBits[j] = inputBits[k++];
+            modulatorVector[i].fourBits.push_back(inputBits.at(k++));
         }
     }
 }
 
-void setFrequencies(modulator::Symbol scArray[], const double frequencies[])
+
+
+void setRe(std::vector<OFDM::Modulator> &modulatorVector)
 {
-    for (int i=0 ; i<4 ; i++)
+    for (int i=0 ; i<modulatorVector.size() ; i++)
     {
-        scArray[i].frequency = frequencies[i];
-    }
-}
-
-void calculateAmplitudeAndPhase(modulator::Symbol scArray[])
-{
-    setRe(scArray);
-    setIm(scArray);
-}
-
-void setRe(modulator::Symbol scArray[])
-{
-    for (int i=0 ; i<4 ; i++)
-    {
-        if (scArray[i].inputBits[0] == 0 &&  scArray[i].inputBits[1] == 0)
+        if (modulatorVector[i].fourBits[0] == 0 &&  modulatorVector[i].fourBits[1] == 0)
         {
-            scArray[i].complex.real(-3.0);
+            modulatorVector[i].complex.real(-3.0);
         }
-
-        if (scArray[i].inputBits[0] == 0 &&  scArray[i].inputBits[1] == 1)
+        if (modulatorVector[i].fourBits[0] == 0 &&  modulatorVector[i].fourBits[1] == 1)
         {
-            scArray[i].complex.real(-1.0);
+            modulatorVector[i].complex.real(-1.0);
         }
-
-        if (scArray[i].inputBits[0] == 1 &&  scArray[i].inputBits[1] == 1)
+        if (modulatorVector[i].fourBits[0] == 1 &&  modulatorVector[i].fourBits[1] == 1)
         {
-            scArray[i].complex.real(1.0);
+            modulatorVector[i].complex.real(1.0);
         }
-
-        if (scArray[i].inputBits[0] == 1 &&  scArray[i].inputBits[1] == 0)
+        if (modulatorVector[i].fourBits[0] == 1 &&  modulatorVector[i].fourBits[1] == 0)
         {
-            scArray[i].complex.real(3.0);
+            modulatorVector[i].complex.real(3.0);
         }
     }
 }
 
-void setIm(modulator::Symbol scArray[])
+void setIm(std::vector<OFDM::Modulator> &modulatorVector)
 {
-    for (int i=0 ; i<4 ; i++)
+    for (int i=0 ; i<modulatorVector.size() ; i++)
     {
-        if (scArray[i].inputBits[2] == 0 &&  scArray[i].inputBits[3] == 0)
+        if (modulatorVector[i].fourBits[2] == 0 &&  modulatorVector[i].fourBits[3] == 0)
         {
-            scArray[i].complex.imag(-3.0);
+            modulatorVector[i].complex.imag(-3.0);
         }
-
-        if (scArray[i].inputBits[2] == 0 &&  scArray[i].inputBits[3] == 1)
+        if (modulatorVector[i].fourBits[2] == 0 &&  modulatorVector[i].fourBits[3] == 1)
         {
-            scArray[i].complex.imag(-1.0);
+            modulatorVector[i].complex.imag(-1.0);
         }
-
-        if (scArray[i].inputBits[2] == 1 &&  scArray[i].inputBits[3] == 1)
+        if (modulatorVector[i].fourBits[2] == 1 &&  modulatorVector[i].fourBits[3] == 1)
         {
-            scArray[i].complex.imag(1.0);
+            modulatorVector[i].complex.imag(1.0);
         }
-
-        if (scArray[i].inputBits[2] == 1 &&  scArray[i].inputBits[3] == 0)
+        if (modulatorVector[i].fourBits[2] == 1 &&  modulatorVector[i].fourBits[3] == 0)
         {
-            scArray[i].complex.imag(3.0);
+            modulatorVector[i].complex.imag(3.0);
         }
     }
 }
 
-void convertComplexToPolar(modulator::Symbol scArray[])
+void setRealAndImaginary(std::vector<OFDM::Modulator> &modulatorVector)
 {
-    for (int i=0 ; i<4 ; i++)
+    setRe(modulatorVector);
+    setIm(modulatorVector);
+}
+
+void convertComplexToPolar(std::vector<OFDM::Modulator> &modulatorVector)
+{
+    for (int i=0 ; i<modulatorVector.size() ; i++)
     {
-        scArray[i].amplitude = std::abs(scArray[i].complex);
-        scArray[i].phase = std::arg(scArray[i].complex);
-        scArray[i].phase < 0
-        ?   scArray[i].phase = 2*M_PI + scArray[i].phase
-        :   scArray[i].phase = scArray[i].phase;
+        modulatorVector[i].amplitude = std::abs(modulatorVector[i].complex);
+        modulatorVector[i].phase = std::arg(modulatorVector[i].complex) /*   * 180/M_PI */;
+        
+        // if (modulatorVector[i].phase < 0)
+        // {
+        //     modulatorVector[i].phase = 360 + modulatorVector[i].phase;
+        // }
     }
 }
 
-void setAngularVelocity(modulator::Symbol scArray[])
-{
-    for (int i=0 ; i<4 ; i++)
+void setZ(std::vector<OFDM::Modulator> &modulatorVector)
+{   // operuję na wartościach w formacie a + ib, więc zamiana na postać wykładniczą nie jest mi potrzebna
+    for (int i=0 ; i<modulatorVector.size() ; i++)
     {
-        scArray[i].angularVelocity = 2 * M_PI * scArray[i].frequency;
+        //  Later I'll use in generator, complex values instead of exponential
+        modulatorVector[i].z = { modulatorVector[i].amplitude * cos(modulatorVector[i].phase),
+                                modulatorVector[i].amplitude * sin(modulatorVector[i].phase) };
     }
 }
 
-void setZ(modulator::Symbol scArray[])
-{// operuję na wartościach w formacie a + ib, więc zamiana na postać wykładniczą nie jest mi potrzebna
- // oczywiście dostaję tu te same wartości co Re{z} oraz Im{z}, z mapowania na konstelacje.
-   for (int i=0 ; i<4 ; i++)
-   {
-        double a=0.0, b=0.0;
-        a = scArray[i].amplitude * cos(scArray[i].phase);
-        b = scArray[i].amplitude * sin(scArray[i].phase);
-        scArray[i].z = {a, b};
-   }
-}
-
-void setTime(double t[], const int N, double fs, double ts)
+void setTime(std::vector<double> &t, const int N, double ts)
 {
    //   0 : ts : (N-1)*ts
-
    for (int i=0 ; i<N ; i++)
    {
-       t[i] = ts * i;
-    //    std::cout << t[i] << ", ";
-    //    if (i%4 == 3)
-    //         std::cout << std::endl;
+       t.push_back(ts * i);
    }
 }
 
-void generator(modulator::Symbol scArray[], int M, int N, double t[])
+void createSubcarrier(std::vector<OFDM::Modulator> &modulatorVector, const std::vector<double> frequencies, std::vector<double> &t, const double ts, const int N)
 {
-   for (int i=0 ; i<M ; i++)
-   {
+    setAngularVelocity(modulatorVector, frequencies);
+    setTime(t, N, ts);
+    for (int i=0 ; i<modulatorVector.size() ; i++)
+    {
        for (int j=0 ; j<N ; j++)
-       {
-           //scArray[i].generatorValue[j] = scArray[i].z * exp(scArray[i].angularVelocity * t[j]);
+        {
             double a=0.0, b=0.0;
-            a = scArray[i].amplitude * cos(scArray[i].angularVelocity * t[j]);
-            b = scArray[i].amplitude * sin(scArray[i].angularVelocity * t[j]);
+            a = cos(modulatorVector[i].angularVelocity * t[j]);
+            b = sin(modulatorVector[i].angularVelocity * t[j]);
             std::complex<double> R = {a,b};
-            scArray[i].generatorValue[j] = scArray[i].z * R;
-       }
-   }
+            modulatorVector[i].subcarrierSample.push_back(modulatorVector[i].z * R);
+        }
+    }
 }
 
-void IDFT(modulator::Symbol scArray[], std::complex<double> summary[], int M, int N)
+void calculateIDFT(std::vector<OFDM::Modulator> &modulatorVector, std::vector<std::complex<double>> &sumOfSubcarriers, const int N)
 {
-   for (int i=0 ; i<M ; i++)
-   {
-       for(int j=0 ; j<N ; j++)
-       {
-           summary[j] += scArray[i].generatorValue[j];
-       }
-   }
-   std::cout << std::endl;
+    std::complex<double> temp;
+
+    for (int i=0 ; i<N ; i++)
+    {
+        temp = {0.0, 0.0};
+        for (int j=0 ; j<modulatorVector.size() ; j++)
+        {
+            temp += modulatorVector[j].subcarrierSample[i]; 
+        }
+        sumOfSubcarriers.push_back(temp);
+    }
 }
 
-void realPartofOutput(std::complex<double> summary[], double DFTinput[], int M, int N)
+void extractRealPart(std::vector<std::complex<double>> &sumOfSubcarriers, std::vector<double> &modulatorOutput, const int N)
 {
     for (int i=0 ; i<N ; i++)
     {
-        DFTinput[i] = summary[i].real();
+        modulatorOutput.push_back(sumOfSubcarriers[i].real());
     }
 }
-//============================================================================================================
 
-void setFAnalysis (double fAnalysis[], int N, modulator::Symbol scArray[], double fs, double ts)
-{
-    std::cout << std::endl << "fAnalysis: " << std::endl;
-    for(int i=0 ; i<N ; i++)
-    {
-        fAnalysis[i] = i*fs/N;
-        //std::cout << "Prazek " << i << ": " << fAnalysis[i] << std::endl;
-    }
-    std::cout << std::endl;
-}
+//====================================================================================
+//======================== DEMODULATOR ===============================================
+//====================================================================================
 
-void calculateDFT (std::complex<double> DFToutput[], int N, double DFTinput[])
-{       // n-ilosc probek wejsciowych
+void calculateDFT (std::vector<OFDM::Demodulator> demodulatorVector, std::vector<double> &DFTinput, std::vector<std::vector<std::complex<double>>> &DFToutput, int N) // SEGMENTATION FAULT  ==========================================================================
+{       // n-indeks wartosci wejsciowych
         // m-indeks wartosci wyjsciowych
         // N-ilosc probek wejsciowych oraz wyjsciowych / rozdzielczosc
+        
     for ( int m=0 ; m<N ; m++ )
     {
+        DFToutput.resize(N);
         double a = 0.0;
         double b = 0.0;
-        for ( int n=0 ; n<N ; n++ )
+        for ( int n=0; n<N ; n++)
         {
             a = DFTinput[n] *        cos(2*M_PI*m*n/N);
             b = DFTinput[n] * (-1) * sin(2*M_PI*m*n/N);
             std::complex <double> temp = {a, b};
-            DFToutput[m] += temp;
+            DFToutput[m].push_back(temp);
         }
     }
 }
 
-void showDFT (std::complex<double> DFToutput[], int M, int N) //  NAPRAWIĆ
-{
-    for (int j=0 ; j<N ; j++)
+void setFAnalysis (std::vector<double> &fAnalysis, const double fs, const int N)
+{   
+    for(int m=0 ; m<N ; m++)
     {
-        //std::cout << DFToutput[j] << std::endl;
+        fAnalysis.push_back(m*fs/N);
     }
-    std::cout << std::endl;
-}
+}             
 
-void calculateAmplitudeAndPhase (std::complex<double> DFToutput[], int M, int N, double fAnalysis[])
+void sumOfDFToutput(std::vector<OFDM::Demodulator> &demodulatorVector, const std::vector<std::vector<std::complex<double>>> &DFToutput, std::vector<std::complex<double>> &DFTsum, const int N)
 {
-   for (int i=0 ; i<N ; i++)
-   {
-       double a = DFToutput[i].real();
-       double b = DFToutput[i].imag();
-       std::complex<double> temp = {a, b};    
-        
-       std::cout << std::fixed ;
-        std::cout << "Prazek: " << i 
-                 << " \tCzestotliwosc " << fAnalysis[i]
-                 << ": \tAmplituda " << abs(temp)
-                 << ": \tFaza " << std::arg(temp) << std::endl;
-       
-                 // DFToutput[i] = 2 * DFToutput.
-       //Mr = amplituda prążka  
-    //Mr = Ao*N/2  
-    // 2*Mr/N = Ao
-    }
-    std::cout << std::endl;   
-}
+    std::complex<double> temp;
 
-void showOutput(std::complex<double> DFToutput[], int N, double fAnalysis[])
-{
     for (int i=0 ; i<N ; i++)
     {
-       
+        temp = 0.0;
+        for (int j=0 ; j<N ; j++)       //  sumowanie wartoscy DFT
+        {
+            temp += DFToutput[i][j];
+        }
+        DFTsum.push_back(temp); //  tablica na sumy wartosci DFT
+    }
+}
+
+
+void extractZ (std::vector<OFDM::Demodulator> &demodulatorVector, const std::vector<std::vector<std::complex<double>>> &DFToutput, std::vector<std::complex<double>> &DFTsum, const std::vector<double> fAnalysis, const std::vector<double> &frequencies, const double ts, const int N)
+{
+
+    for (int i=0,j=0 ; i<N, j<demodulatorVector.size(); i++)
+    {
+        if ( abs(DFTsum[i]) > 1 )
+        {
+            demodulatorVector[j].generatorValue = DFTsum[i];   // do pola 'generatorValue' trafia wartosc wyjsciowa DFT. generatorVaue to inaczej z * e^(j*w*t)
+            demodulatorVector[j].frequency = demodulatorVector[j].frequency;
+            j++;
+        }
+        else
+            continue;
+    }
+    
+    std::complex<double> gen ;  // gen = a+ib  czyli  e^(j*w*t) 
+    double scalingFactor = 2.0/N; // Mr=A*N/2  =>  A=Mr*2/N  
+    setAngularVelocity(demodulatorVector, frequencies);
+
+    for (int i=0 ; i<demodulatorVector.size() ; i++)
+    {
+        double a = cos(demodulatorVector[i].angularVelocity* ts*N); //      1/ts, bo chcę razy t, czyli cały czas dla danego okresu sygnału
+        double b = sin(demodulatorVector[i].angularVelocity* ts*N);
+        gen = {a,b}; // gen = e^(jwt)
+
+        demodulatorVector[i].z = demodulatorVector[i].generatorValue /* / gen */; // z = z * e^(jwt) / e^(jwt)
+        demodulatorVector[i].amplitude = scalingFactor * std::abs(demodulatorVector[i].z);
+        demodulatorVector[i].phase = std::arg(demodulatorVector[i].z) /*    * 180/M_PI  */;
+        // if (demodulatorVector[i].phase < 0)
+        // {
+        //     demodulatorVector[i].phase = 360 + demodulatorVector[i].phase;
+        // }
+
+    }
+
+    // pokazanie DFT output samples
+}
+
+
+void setBits(std::vector<OFDM::Demodulator> &demodulatorVector)
+{
+
+    
+    for (int i=0 ; i<demodulatorVector.size() ; i++)
+    {
+        demodulatorVector[i].fourBits.resize(4);
+        
+        if (demodulatorVector[i].z.real() < (-2) )
+        {
+            demodulatorVector[i].fourBits[0] = 0;
+            demodulatorVector[i].fourBits[1] = 0;
+        }
+        if (demodulatorVector[i].z.real() < 0 && demodulatorVector[i].z.real() >= -2)
+        {
+            demodulatorVector[i].fourBits[0] = 0;
+            demodulatorVector[i].fourBits[1] = 1;
+        }
+        if (demodulatorVector[i].z.real() >= 0  && demodulatorVector[i].z.real() <= 2)
+        {
+            demodulatorVector[i].fourBits[0] = 1;
+            demodulatorVector[i].fourBits[1] = 1;
+        }
+        if (demodulatorVector[i].z.real() > 2)
+        {
+            demodulatorVector[i].fourBits[0] = 1;
+            demodulatorVector[i].fourBits[1] = 0;
+        }
+
+
+        if (demodulatorVector[i].z.imag() < -2)
+        {
+            demodulatorVector[i].fourBits[2] = 0;
+            demodulatorVector[i].fourBits[3] = 0;
+        }
+        if (demodulatorVector[i].z.imag() < 0  && demodulatorVector[i].z.imag() >= -2)
+        {
+            demodulatorVector[i].fourBits[2] = 0;
+            demodulatorVector[i].fourBits[3] = 1;
+        }
+        if (demodulatorVector[i].z.imag() > 0 && demodulatorVector[i].z.imag() <= 2)
+        {
+            demodulatorVector[i].fourBits[2] = 1;
+            demodulatorVector[i].fourBits[3] = 1;
+        }
+        if (demodulatorVector[i].z.imag() > 2 )
+        {
+            demodulatorVector[i].fourBits[3] = 1;
+            demodulatorVector[i].fourBits[2] = 0;
+        }
+        
     }
 }
