@@ -1,0 +1,1 @@
+fs powinno być zależne od N w taki sposób, by niezależnie od N, fs dobrze skalowało oś fAnalysis (oś częstotliwości, dla DFT)

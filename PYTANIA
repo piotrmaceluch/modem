@@ -1,0 +1,8 @@
+1. W jaki sposób na demodulatorze wiadomo które prążki są ważne, a które nie?
+
+a) czy poprzez znane a priori częstotliwości, i odpowiadające im wartości
+	-> czyli bierzemy wartości dla 15kHz, dla 30kHz itp.
+b) czy poprzez poziomy prążków,
+	-> czyli jeśli amplituda prążka jest większa od x, to jest brany pod uwagę?
+
+

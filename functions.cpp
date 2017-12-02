@@ -111,12 +111,7 @@ void convertComplexToPolar(std::vector<OFDM::Modulator> &modulatorVector)
     for (int i=0 ; i<modulatorVector.size() ; i++)
     {
         modulatorVector[i].amplitude = std::abs(modulatorVector[i].complex);
-        modulatorVector[i].phase = std::arg(modulatorVector[i].complex) /*   * 180/M_PI */;
-        
-        // if (modulatorVector[i].phase < 0)
-        // {
-        //     modulatorVector[i].phase = 360 + modulatorVector[i].phase;
-        // }
+        modulatorVector[i].phase = std::arg(modulatorVector[i].complex);
     }
 }
 
@@ -151,7 +146,7 @@ void createSubcarrier(std::vector<OFDM::Modulator> &modulatorVector, const std::
             a = cos(modulatorVector[i].angularVelocity * t[j]);
             b = sin(modulatorVector[i].angularVelocity * t[j]);
             std::complex<double> R = {a,b};
-            modulatorVector[i].subcarrierSample.push_back(modulatorVector[i].z * R);
+            modulatorVector[i].subcarrierSamples.push_back(modulatorVector[i].z * R);
         }
     }
 }
@@ -165,7 +160,7 @@ void calculateIDFT(std::vector<OFDM::Modulator> &modulatorVector, std::vector<st
         temp = {0.0, 0.0};
         for (int j=0 ; j<modulatorVector.size() ; j++)
         {
-            temp += modulatorVector[j].subcarrierSample[i]; 
+            temp += modulatorVector[j].subcarrierSamples[i]; 
         }
         sumOfSubcarriers.push_back(temp);
     }
@@ -183,23 +178,27 @@ void extractRealPart(std::vector<std::complex<double>> &sumOfSubcarriers, std::v
 //======================== DEMODULATOR ===============================================
 //====================================================================================
 
-void calculateDFT (std::vector<OFDM::Demodulator> demodulatorVector, std::vector<double> &DFTinput, std::vector<std::vector<std::complex<double>>> &DFToutput, int N) // SEGMENTATION FAULT  ==========================================================================
+void calculateDFT (std::vector<OFDM::Demodulator> &demodulatorVector, const std::vector<double> &DFTinput, std::vector<std::complex<double>> &DFToutput, const int N)
 {       // n-indeks wartosci wejsciowych
         // m-indeks wartosci wyjsciowych
         // N-ilosc probek wejsciowych oraz wyjsciowych / rozdzielczosc
-        
+    std::complex<double> stripe;
+    std::complex <double> temp;
+    double a;
+    double b;
     for ( int m=0 ; m<N ; m++ )
     {
-        DFToutput.resize(N);
-        double a = 0.0;
-        double b = 0.0;
+        a = 0.0;
+        b = 0.0;
+        stripe = {0,0};
         for ( int n=0; n<N ; n++)
         {
-            a = DFTinput[n] *        cos(2*M_PI*m*n/N);
+            a = DFTinput[n] *        cos(2*M_PI*n*m/N);
             b = DFTinput[n] * (-1) * sin(2*M_PI*m*n/N);
-            std::complex <double> temp = {a, b};
-            DFToutput[m].push_back(temp);
+            temp = {a, b};
+            stripe += temp;
         }
+        DFToutput.push_back(stripe);
     }
 }
 
@@ -211,111 +210,102 @@ void setFAnalysis (std::vector<double> &fAnalysis, const double fs, const int N)
     }
 }             
 
-void sumOfDFToutput(std::vector<OFDM::Demodulator> &demodulatorVector, const std::vector<std::vector<std::complex<double>>> &DFToutput, std::vector<std::complex<double>> &DFTsum, const int N)
+void setSubcarriersVector (std::vector<OFDM::Demodulator> &demodulatorVector, const std::vector<std::complex<double>> &DFToutput, const int N)
 {
-    std::complex<double> temp;
-
-    for (int i=0 ; i<N ; i++)
+    
+    for (int i=0,j=0 ; j<demodulatorVector.size() || i<N ; i++)
     {
-        temp = 0.0;
-        for (int j=0 ; j<N ; j++)       //  sumowanie wartoscy DFT
+        if ( std::abs(DFToutput[i]) > 1 )
         {
-            temp += DFToutput[i][j];
+            demodulatorVector[j++].generatorValue = DFToutput[i];   // do pola 'generatorValue' trafia wartosc wyjsciowa DFT. generatorVaue to inaczej z * e^(j*w*t)
         }
-        DFTsum.push_back(temp); //  tablica na sumy wartosci DFT
+        else
+        {
+            continue;
+        }
     }
 }
 
-
-void extractZ (std::vector<OFDM::Demodulator> &demodulatorVector, const std::vector<std::vector<std::complex<double>>> &DFToutput, std::vector<std::complex<double>> &DFTsum, const std::vector<double> fAnalysis, const std::vector<double> &frequencies, const double ts, const int N)
-{
-
-    for (int i=0,j=0 ; i<N, j<demodulatorVector.size(); i++)
-    {
-        if ( abs(DFTsum[i]) > 1 )
-        {
-            demodulatorVector[j].generatorValue = DFTsum[i];   // do pola 'generatorValue' trafia wartosc wyjsciowa DFT. generatorVaue to inaczej z * e^(j*w*t)
-            demodulatorVector[j].frequency = demodulatorVector[j].frequency;
-            j++;
-        }
-        else
-            continue;
-    }
-    
+void extractZ (std::vector<OFDM::Demodulator> &demodulatorVector, const std::vector<std::complex<double>> &DFToutput, const std::vector<double> &frequencies, const double ts, const int N)
+{   
     std::complex<double> gen ;  // gen = a+ib  czyli  e^(j*w*t) 
-    double scalingFactor = 2.0/N; // Mr=A*N/2  =>  A=Mr*2/N  
+    double ratio = 2.0/N; // Mr=A*N/2  =>  A=Mr*2/N  (Mr = amplituda prążka)
     setAngularVelocity(demodulatorVector, frequencies);
 
     for (int i=0 ; i<demodulatorVector.size() ; i++)
     {
-        double a = cos(demodulatorVector[i].angularVelocity* ts*N); //      1/ts, bo chcę razy t, czyli cały czas dla danego okresu sygnału
+        double a = cos(demodulatorVector[i].angularVelocity* ts*N);
         double b = sin(demodulatorVector[i].angularVelocity* ts*N);
         gen = {a,b}; // gen = e^(jwt)
 
-        demodulatorVector[i].z = demodulatorVector[i].generatorValue /* / gen */; // z = z * e^(jwt) / e^(jwt)
-        demodulatorVector[i].amplitude = scalingFactor * std::abs(demodulatorVector[i].z);
-        demodulatorVector[i].phase = std::arg(demodulatorVector[i].z) /*    * 180/M_PI  */;
-        // if (demodulatorVector[i].phase < 0)
-        // {
-        //     demodulatorVector[i].phase = 360 + demodulatorVector[i].phase;
-        // }
-
+        demodulatorVector[i].z = demodulatorVector[i].generatorValue;
+        demodulatorVector[i].amplitude = ratio * std::abs(demodulatorVector[i].z);
+        demodulatorVector[i].phase = std::arg(demodulatorVector[i].z);
     }
+}
 
-    // pokazanie DFT output samples
+void setComplex (std::vector<OFDM::Demodulator> &demodulatorVector)
+{
+    double a,b;
+    for (int i=0 ; i<demodulatorVector.size() ; i++)
+    {
+        a = cos(demodulatorVector[i].phase);
+        b = sin(demodulatorVector[i].phase);
+        demodulatorVector[i].complex = {a,b};
+        std::cout << "amplitude [" << i << "]" << demodulatorVector[i].amplitude << std::endl; 
+        std::cout << "phase     [" << i << "]" << demodulatorVector[i].phase << std::endl; 
+        std::cout << "complex   [" << i << "]" << demodulatorVector[i].complex << std::endl; 
+    }
 }
 
 
 void setBits(std::vector<OFDM::Demodulator> &demodulatorVector)
-{
-
-    
+{   
     for (int i=0 ; i<demodulatorVector.size() ; i++)
     {
         demodulatorVector[i].fourBits.resize(4);
         
-        if (demodulatorVector[i].z.real() < (-2) )
+        if (demodulatorVector[i].complex.real() < (-2) )
         {
             demodulatorVector[i].fourBits[0] = 0;
             demodulatorVector[i].fourBits[1] = 0;
         }
-        if (demodulatorVector[i].z.real() < 0 && demodulatorVector[i].z.real() >= -2)
+        if (demodulatorVector[i].complex.real() < 0 && demodulatorVector[i].complex.real() >= -2)
         {
             demodulatorVector[i].fourBits[0] = 0;
             demodulatorVector[i].fourBits[1] = 1;
         }
-        if (demodulatorVector[i].z.real() >= 0  && demodulatorVector[i].z.real() <= 2)
+        if (demodulatorVector[i].complex.real() >= 0  && demodulatorVector[i].complex.real() <= 2)
         {
             demodulatorVector[i].fourBits[0] = 1;
             demodulatorVector[i].fourBits[1] = 1;
         }
-        if (demodulatorVector[i].z.real() > 2)
+        if (demodulatorVector[i].complex.real() > 2)
         {
             demodulatorVector[i].fourBits[0] = 1;
             demodulatorVector[i].fourBits[1] = 0;
         }
 
 
-        if (demodulatorVector[i].z.imag() < -2)
+        if (demodulatorVector[i].complex.imag() < -2)
         {
             demodulatorVector[i].fourBits[2] = 0;
             demodulatorVector[i].fourBits[3] = 0;
         }
-        if (demodulatorVector[i].z.imag() < 0  && demodulatorVector[i].z.imag() >= -2)
+        if (demodulatorVector[i].complex.imag() < 0  && demodulatorVector[i].complex.imag() >= -2)
         {
             demodulatorVector[i].fourBits[2] = 0;
             demodulatorVector[i].fourBits[3] = 1;
         }
-        if (demodulatorVector[i].z.imag() > 0 && demodulatorVector[i].z.imag() <= 2)
+        if (demodulatorVector[i].complex.imag() > 0 && demodulatorVector[i].complex.imag() <= 2)
         {
             demodulatorVector[i].fourBits[2] = 1;
             demodulatorVector[i].fourBits[3] = 1;
         }
-        if (demodulatorVector[i].z.imag() > 2 )
+        if (demodulatorVector[i].complex.imag() > 2 )
         {
             demodulatorVector[i].fourBits[3] = 1;
             demodulatorVector[i].fourBits[2] = 0;
         }
-        
     }
 }

@@ -12,8 +12,8 @@ namespace OFDM
     {
     public:
         static const int M = 6; //  number of subcarriers
-        static const int N = 8;
-        
+        static const int N = 64;
+
         std::vector<int> fourBits;
         double real;
         double imaginary;
@@ -22,7 +22,7 @@ namespace OFDM
         double frequency;
         double angularVelocity;	
         std::complex<double> complex;
-        std::vector<std::complex<double>> subcarrierSample;
+        std::vector<std::complex<double>> subcarrierSamples;
         std::complex<double> z;
         
     }; // class Modem
