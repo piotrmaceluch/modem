@@ -61,9 +61,36 @@ int main(int argc, char** argv)
     setComplex(demodulatorVector);
     setBits(demodulatorVector);
 
+    std::cout << "====== Modulator: =================================" << std::endl << std::endl;
+    for (int i=0 ; i<modulatorVector.size() ; i++)
+    {
+        std::cout << "Podnosna nr: " << i 
+            << " \tCzestotliwosc " << modulatorVector[i].frequency
+            //<< ": \tGenerator value: " << modulatorVector[i].generatorValue
+            << ": \tAmplituda " << modulatorVector[i].amplitude
+            << ": \tFaza " << modulatorVector[i].phase
+            << ": \tBity ";
+            for (int k=0 ; k<modulatorVector[i].fourBits.size() ; k++)
+                std::cout << modulatorVector[i].fourBits[k];
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
 
+    std::cout << "====== Demodulator: ===================================" << std::endl << std::endl;
+    for (int i=0 ; i<demodulatorVector.size() ; i++)
+    {
+        std::cout << "Podnosna nr: " << i 
+            << " \tCzestotliwosc " << demodulatorVector[i].frequency
+           //<< ": \tGenerator value: " << demodulatorVector[i].generatorValue
+            << ": \tAmplituda " << demodulatorVector[i].amplitude
+            << ": \tFaza " << demodulatorVector[i].phase
+            << ": \tBity ";
+            for (int k=0 ; k<demodulatorVector[i].fourBits.size() ; k++)
+                std::cout << demodulatorVector[i].fourBits[k];
+        std::cout << std::endl;
+    }
 
-
+    
 
     // std::cout << std::endl;
     // std::cout << "====== Modulator: =================================" << std::endl << std::endl;
@@ -129,13 +156,13 @@ int main(int argc, char** argv)
     // }
     // std::cout << std::endl;
 
-    std::cout << "------------- Real part of output: ----------------" << std::endl;
-    std::cout << "Wartosci wyjsciowe modulatora: " << std::endl;
-    for(int i=0 ; i<OFDM::Modem::N ; i++)
-    {
-        std::cout << modulatorOutput[i] << std::endl;
-    }
-    std::cout << std::endl;
+    // std::cout << "------------- Real part of output: ----------------" << std::endl;
+    // std::cout << "Wartosci wyjsciowe modulatora: " << std::endl;
+    // for(int i=0 ; i<OFDM::Modem::N ; i++)
+    // {
+    //     std::cout << modulatorOutput[i] << std::endl;
+    // }
+    // std::cout << std::endl;
 
 
 
@@ -143,101 +170,36 @@ int main(int argc, char** argv)
 
 
 
-    std::cout << "====== Demodulator: ===================================" << std::endl << std::endl;
+    // std::cout << "====== Demodulator: ===================================" << std::endl << std::endl;
     
-    std::cout << "--------------------- Input: ----------------------" << std::endl;
-    for(int i=0 ; i<OFDM::Modem::N ; i++)
-    {    
-        std::cout << demodulatorInput[i] << std::endl;
-    }
-    std::cout << std::endl;
+    // std::cout << "--------------------- Input: ----------------------" << std::endl;
+    // for(int i=0 ; i<OFDM::Modem::N ; i++)
+    // {    
+    //     std::cout << demodulatorInput[i] << std::endl;
+    // }
+    // std::cout << std::endl;
  
 
-    std::cout << "------------------- DFT output --------------------" << std::endl;
+    // std::cout << "------------------- DFT output --------------------" << std::endl;
 
-    for (int j=0 ; j<DFToutput.size() ; j++)
-    {
-        std::cout << DFToutput[j] << std::endl;
-    }
-    std::cout << std::endl;
-
-    std::cout << "------ Check fAnalysis and demodulatorVector ------" << std::endl;
-    std::cout << "fs: " << fs << std::endl;
-    for(int i=0 ; i<OFDM::Modem::N ; i++)
-    {    
-        std::cout << "f: " << fAnalysis.at(i) << "\tDftsum: " << DFToutput.at(i) << std::endl;
-    }
-    std::cout << std::endl;
-
-    std::cout << "------------------ Extracted Z --------------------" << std::endl;
-    for(int i=0 ; i<demodulatorVector.size() ; i++)
-    {    
-        std::cout << demodulatorVector[i].z << std::endl;
-    }
-    std::cout << std::endl;
-
-    std::cout << "----------------- Real i Imag: --------------------" << std::endl;
-    for ( int i=0 ; i<demodulatorVector.size() ; i++)
-    {
-        std::cout << "Complex: " << demodulatorVector[i].z << std::endl;
-    }
-    std::cout << std::endl;
-
-    // std::cout << "------------- Amplitude and Phase: ----------------" << std::endl;
-    // for ( int i=0 ; i<demodulatorVector.size() ; i++)
+    // for (int j=0 ; j<DFToutput.size() ; j++)
     // {
-    //     std::cout << "Amplitude: " << demodulatorVector[i].amplitude << std::endl;
-    //     if (demodulatorVector[i].phase >= 0)
-    //     {
-    //         std::cout << demodulatorVector[i].phase * 180/M_PI << std::endl;
-    //     }
-    //     if (demodulatorVector[i].phase < 0)
-    //     {
-    //         std::cout << 360 + demodulatorVector[i].phase * 180/M_PI << std::endl;
-    //     }
-    //     std::cout << std::endl;
+    //     std::cout << DFToutput[j] << std::endl;
     // }
-    // //    PYTANIA:
-    // //              a) funkcja setTime. Jak wyskalować wektor czasu
-    // //              b) w extractZ, *t.  Czy to ma być tak pomnożone, razy okres próbkowania
-    
-    std::cout << "---------------------- ZZZZZZZZZZZZZZZ ----------------------: " << std::endl;
-    for (int i=0 ; i<demodulatorVector.size() ; i++)
-    {
-        std::cout << demodulatorVector[i].complex << std::endl;
-    }
+    // std::cout << std::endl;
 
+    // std::cout << "------ Check fAnalysis and demodulatorVector ------" << std::endl;
+    // std::cout << "fs: " << fs << std::endl;
+    // for(int i=0 ; i<OFDM::Modem::N ; i++)
+    // {    
+    //     std::cout << "f: " << fAnalysis.at(i) << "\tDftsum: " << DFToutput.at(i) << std::endl;
+    // }
+    // std::cout << std::endl;
 
-
-    std::cout << "====== Modulator: =================================" << std::endl << std::endl;
-    for (int i=0 ; i<modulatorVector.size() ; i++)
-    {
-        std::cout << "Prazek: " << i 
-            << " \tCzestotliwosc " << modulatorVector[i].frequency
-            //<< ": \tGenerator value: " << modulatorVector[i].generatorValue
-            << ": \tAmplituda " << modulatorVector[i].amplitude
-            << ": \tFaza " << modulatorVector[i].phase
-            << ": \tBity ";
-            for (int k=0 ; k<modulatorVector[i].fourBits.size() ; k++)
-                std::cout << modulatorVector[i].fourBits[k];
-        std::cout << std::endl;
-    }
-    std::cout << std::endl;
-
-    std::cout << "====== Demodulator: ===================================" << std::endl << std::endl;
-    for (int i=0 ; i<demodulatorVector.size() ; i++)
-    {
-        std::cout << "Prazek: " << i 
-            << " \tCzestotliwosc " << demodulatorVector[i].frequency
-           //<< ": \tGenerator value: " << demodulatorVector[i].generatorValue
-            << ": \tAmplituda " << demodulatorVector[i].amplitude
-            << ": \tFaza " << demodulatorVector[i].phase
-            << ": \tBity ";
-            for (int k=0 ; k<demodulatorVector[i].fourBits.size() ; k++)
-                std::cout << demodulatorVector[i].fourBits[k];
-        std::cout << std::endl;
-    }
-
-    
-
+    // std::cout << "------------------ Extracted Z --------------------" << std::endl;
+    // for(int i=0 ; i<demodulatorVector.size() ; i++)
+    // {    
+    //     std::cout << demodulatorVector[i].z << std::endl;
+    // }
+    // std::cout << std::endl;
 }

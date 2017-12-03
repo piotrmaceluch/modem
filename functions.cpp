@@ -249,12 +249,9 @@ void setComplex (std::vector<OFDM::Demodulator> &demodulatorVector)
     double a,b;
     for (int i=0 ; i<demodulatorVector.size() ; i++)
     {
-        a = cos(demodulatorVector[i].phase);
-        b = sin(demodulatorVector[i].phase);
+        a = demodulatorVector[i].amplitude * cos(demodulatorVector[i].phase);
+        b = demodulatorVector[i].amplitude * sin(demodulatorVector[i].phase);
         demodulatorVector[i].complex = {a,b};
-        std::cout << "amplitude [" << i << "]" << demodulatorVector[i].amplitude << std::endl; 
-        std::cout << "phase     [" << i << "]" << demodulatorVector[i].phase << std::endl; 
-        std::cout << "complex   [" << i << "]" << demodulatorVector[i].complex << std::endl; 
     }
 }
 
@@ -270,7 +267,7 @@ void setBits(std::vector<OFDM::Demodulator> &demodulatorVector)
             demodulatorVector[i].fourBits[0] = 0;
             demodulatorVector[i].fourBits[1] = 0;
         }
-        if (demodulatorVector[i].complex.real() < 0 && demodulatorVector[i].complex.real() >= -2)
+        if (demodulatorVector[i].complex.real() >= -2 && demodulatorVector[i].complex.real() < 0)
         {
             demodulatorVector[i].fourBits[0] = 0;
             demodulatorVector[i].fourBits[1] = 1;
@@ -292,17 +289,17 @@ void setBits(std::vector<OFDM::Demodulator> &demodulatorVector)
             demodulatorVector[i].fourBits[2] = 0;
             demodulatorVector[i].fourBits[3] = 0;
         }
-        if (demodulatorVector[i].complex.imag() < 0  && demodulatorVector[i].complex.imag() >= -2)
+        if (demodulatorVector[i].complex.imag() >= -2 && demodulatorVector[i].complex.imag() <0)
         {
             demodulatorVector[i].fourBits[2] = 0;
             demodulatorVector[i].fourBits[3] = 1;
         }
-        if (demodulatorVector[i].complex.imag() > 0 && demodulatorVector[i].complex.imag() <= 2)
+        if (demodulatorVector[i].complex.imag() >= 0 && demodulatorVector[i].complex.imag( ) < 2)
         {
             demodulatorVector[i].fourBits[2] = 1;
             demodulatorVector[i].fourBits[3] = 1;
         }
-        if (demodulatorVector[i].complex.imag() > 2 )
+        if (demodulatorVector[i].complex.imag() >= 2 )
         {
             demodulatorVector[i].fourBits[3] = 1;
             demodulatorVector[i].fourBits[2] = 0;

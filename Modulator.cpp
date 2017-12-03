@@ -6,7 +6,7 @@
 //#include "Modulator.hpp"
 
 
-void OFDM::Modulator::showValues()
+void OFDM::Modulator::showValues() const
 {	
     std::cout << std::endl;
     std::cout << "--------------------" << std::endl;
@@ -23,10 +23,10 @@ void OFDM::Modulator::showValues()
     std::cout << "Z: \t\t" << z  << " ["<< amplitude << "e^" << phase << "]" << std::endl;
     std::cout << "Frequency[kHz]: " << frequency << std::endl;
     std::cout << "AngularVelocity: " << angularVelocity << std::endl;
-    // std::cout << "GeneratorValue: " << std::endl;
-    // for (int i=0 ; i<N ; i++)
-    // {
-    //     std::cout << this->generatorValue[i] << std::endl;
-    // }
+    std::cout << "GeneratorValue: " << std::endl;
+    for (int i=0 ; i<N ; i++)
+    {
+        std::cout << this->generatorValue[i] << std::endl;
+    }
     std::cout << std::endl;
 }

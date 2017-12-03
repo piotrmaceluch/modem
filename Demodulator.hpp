@@ -11,8 +11,6 @@ namespace OFDM
     class Demodulator : public Modem
     {
     public:
-        std::complex<double> generatorValue;
-        
         Demodulator(  double real = 0.0,
                       double imaginary = 0.0,
                       double amplitude = 0.0,
@@ -23,17 +21,33 @@ namespace OFDM
                       std::complex<double> z = {},
                       std::complex<double> complex = {} )
     	            {
-                      this-> real = real;
-                      this-> imaginary = imaginary;
-                      this-> amplitude = amplitude;
-                      this-> phase = phase;
-                      this-> frequency = frequency;
-                      this-> angularVelocity = angularVelocity;
-                      //this-> generatorValue = generatorValue;
-                      this-> z = z;
-                      this-> complex = complex;
+                        this-> real = real;
+                        this-> imaginary = imaginary;
+                        this-> amplitude = amplitude;
+                        this-> phase = phase;
+                        this-> frequency = frequency;
+                        this-> angularVelocity = angularVelocity;
+                        this-> generatorValue = generatorValue;
+                        this-> z = z;
+                        this-> complex = complex;
                     }
+
+        Demodulator(Demodulator &Dem)
+        {
+            real = Dem.real;
+            imaginary = Dem.imaginary;
+            amplitude = Dem.amplitude;
+            phase = Dem.phase;
+            frequency = Dem.frequency;
+            angularVelocity = Dem.angularVelocity;
+            generatorValue = Dem.generatorValue;
+            z = Dem.z;
+            complex = Dem.complex;
+        }
+
         ~Demodulator()
         {}
+
+        void showValues() const;
     }; //  class Demodulator
 } // namespace OFDM

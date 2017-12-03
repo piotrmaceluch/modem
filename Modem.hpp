@@ -21,9 +21,13 @@ namespace OFDM
         double phase;
         double frequency;
         double angularVelocity;	
-        std::complex<double> complex;
+        std::complex<double> complex = {};
         std::vector<std::complex<double>> subcarrierSamples;
+        std::complex<double> generatorValue;
         std::complex<double> z;
+        
+        virtual ~Modem()
+        {}
         
     }; // class Modem
 } //  namespace OFDM
