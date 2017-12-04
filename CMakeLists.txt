@@ -34,22 +34,12 @@ project(Modem)
 #ten folder bedzie zaincludowany
 
 include_directories("${PROJECT_BINARY_DIR}")
-#include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
-
+add_executable(Modem main.cpp)
 
 #ADD_SUBDIRECTORY (gtest-1.6.0)
 #enable_testing()
-
-
-add_executable(Modem main.cpp)
-#add_executable(Modem functions.cpp)
-#add_executable(Modem Modulator.cpp)
-
-#add_executable(Modulator functions.cpp)
-#add_executable(Modulator symbol.cpp)
-
-
-# Link test executable against gtest & gtest_main
+#include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+#add_executable( runUnitTests test.cpp )
 #target_link_libraries(runUnitTests gtest gtest_main)
 #add_test( runUnitTests runUnitTests )
 

@@ -5,6 +5,8 @@
 #include <array>
 #include <vector>
 #include <numeric>
+#include <cstdlib>
+#include <ctime>
 
 #include "functions.hpp"
 
@@ -40,19 +42,40 @@ void setAngularVelocity (std::vector<T> &Vector, const std::vector<double> &freq
         Vector[i].angularVelocity = 2*M_PI*Vector[i].frequency;
 }
 
-void setInputBits(std::vector<OFDM::Modulator> &modulatorVector, const std::vector<int> &inputBits,  const int bitsPerSymbol)
+void fillInputBitsVector(std::vector<int> &inputBits, const int M, const int BPS)
 {
-    int k = 0;
-    for (int i=0 ; i<modulatorVector.size() ; i++)
+    for (int i=0 ; i<M*BPS ; i++)
     {
-        for (int j=0 ; j<bitsPerSymbol ; j++)
-        {
-            modulatorVector[i].fourBits.push_back(inputBits.at(k++));
-        }
+        inputBits.push_back(( std::rand() % 2 ) + 0);
     }
 }
 
 
+void setInputBits(std::vector<OFDM::Modulator> &modulatorVector, const std::vector<int> &inputBits,  const int bitsPerSymbol)
+{
+    int k=0;
+    for (int i=0 ; i<modulatorVector.size() ; i++)
+    {
+        modulatorVector[i].fourBits.resize(4);
+
+        for (int j=0 ; j<bitsPerSymbol ; j++)
+        {
+            modulatorVector[i].fourBits[j] = inputBits[k++];
+        }
+    }
+
+
+
+
+    // int k = 0;
+    // for (int i=0 ; i<modulatorVector.size() ; i++)
+    // {
+    //     for (int j=0 ; j<bitsPerSymbol ; j++)
+    //     {
+    //         modulatorVector[i].fourBits.push_back(inputBits.at(k++));
+    //     }
+    // }
+}
 
 void setRe(std::vector<OFDM::Modulator> &modulatorVector)
 {
@@ -115,6 +138,13 @@ void convertComplexToPolar(std::vector<OFDM::Modulator> &modulatorVector)
     }
 }
 
+void fillFrequencies(std::vector<OFDM::Modulator> &modulatorVector, std::vector<double> &frequencies, int M)
+{
+    for (int i=0 ; i<modulatorVector.size() ; i++)
+    {
+        frequencies.push_back((i+1) * 15);
+    }
+}
 void setZ(std::vector<OFDM::Modulator> &modulatorVector)
 {   // operuję na wartościach w formacie a + ib, więc zamiana na postać wykładniczą nie jest mi potrzebna
     for (int i=0 ; i<modulatorVector.size() ; i++)
@@ -255,14 +285,13 @@ void setComplex (std::vector<OFDM::Demodulator> &demodulatorVector)
     }
 }
 
-
 void setBits(std::vector<OFDM::Demodulator> &demodulatorVector)
 {   
     for (int i=0 ; i<demodulatorVector.size() ; i++)
     {
         demodulatorVector[i].fourBits.resize(4);
         
-        if (demodulatorVector[i].complex.real() < (-2) )
+        if (demodulatorVector[i].complex.real() < -2 )
         {
             demodulatorVector[i].fourBits[0] = 0;
             demodulatorVector[i].fourBits[1] = 0;
@@ -272,16 +301,17 @@ void setBits(std::vector<OFDM::Demodulator> &demodulatorVector)
             demodulatorVector[i].fourBits[0] = 0;
             demodulatorVector[i].fourBits[1] = 1;
         }
-        if (demodulatorVector[i].complex.real() >= 0  && demodulatorVector[i].complex.real() <= 2)
+        if (demodulatorVector[i].complex.real() >= 0 && demodulatorVector[i].complex.real() < 2)
         {
             demodulatorVector[i].fourBits[0] = 1;
             demodulatorVector[i].fourBits[1] = 1;
         }
-        if (demodulatorVector[i].complex.real() > 2)
+        if (demodulatorVector[i].complex.real() >= 2)
         {
             demodulatorVector[i].fourBits[0] = 1;
             demodulatorVector[i].fourBits[1] = 0;
         }
+
 
 
         if (demodulatorVector[i].complex.imag() < -2)
@@ -289,7 +319,7 @@ void setBits(std::vector<OFDM::Demodulator> &demodulatorVector)
             demodulatorVector[i].fourBits[2] = 0;
             demodulatorVector[i].fourBits[3] = 0;
         }
-        if (demodulatorVector[i].complex.imag() >= -2 && demodulatorVector[i].complex.imag() <0)
+        if (demodulatorVector[i].complex.imag() >= -2 && demodulatorVector[i].complex.imag() < 0)
         {
             demodulatorVector[i].fourBits[2] = 0;
             demodulatorVector[i].fourBits[3] = 1;
@@ -301,8 +331,8 @@ void setBits(std::vector<OFDM::Demodulator> &demodulatorVector)
         }
         if (demodulatorVector[i].complex.imag() >= 2 )
         {
-            demodulatorVector[i].fourBits[3] = 1;
-            demodulatorVector[i].fourBits[2] = 0;
+            demodulatorVector[i].fourBits[2] = 1;
+            demodulatorVector[i].fourBits[3] = 0;
         }
     }
 }

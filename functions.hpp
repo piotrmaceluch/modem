@@ -11,11 +11,13 @@ template <typename T1>
 template <typename T>
     void setAngularVelocity (std::vector<T> &Vector, const std::vector<double> &frequencies);
 
+void fillInputBitsVector(std::vector<int> &inputBits, const int M, const int BPS);
 void setInputBits (std::vector<OFDM::Modulator> &modulatorVector, 
     const std::array<int,16> &inputBits, const int bitsPerSymbol);
 void setTime (std::vector<double> &t, const int N, double const ts);
 void setRealAndImaginary (std::vector<OFDM::Modulator> &modulatorVector);
 void convertComplexToPolar (std::vector<OFDM::Modulator> &modulatorVector);
+void fillFrequencies(std::vector<OFDM::Modulator> &modulatorVector, std::vector<double> &frequencies, int M);
 void setZ (std::vector<OFDM::Modulator> &modulatorVector);
 void createSubcarrier (std::vector<OFDM::Modulator> &modulatorVector, std::vector<double> &t, 
     const int N, const std::vector<double> &frequencies);

@@ -8,7 +8,7 @@
 
 namespace OFDM
 {
-    class Demodulator : public Modem
+    class Demodulator final : public Modem
     {
     public:
         Demodulator(  double real = 0.0,
