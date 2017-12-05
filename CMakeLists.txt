@@ -1,49 +1,34 @@
 #minimalna werscja CMake
 cmake_minimum_required(VERSION 2.8)
 
-#nazwa projektu
+#nazwa projektu - Modem
 project(Modem)
 
-############### MAKRA #####################
- 
- # CMAKE_BINARY_DIR 
- # -jesli buduje w zrodle, to jest to to samo co CMAKE_SOURCE_DIR
- # w innym przypadku, jest to najwyzszy poziom w drzewie budowania
+#Ustaw folder wyjściowy, w którym program zostanie stworzony
+set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
+set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
- # CMAKE_SOURCE_DIR
- # folder z ktorego cmake jest startowany, w tym przypaku najwyzszy poziom   # strkuktury katalogow 
- 
- # EXECUTABLE_OUTPUT_PATH
- # trzeba ustawic te zmienna, by ustalic wspolne miejsce gdzie CMake
- # wstawi wszystkie pliki wykonywalne(executable), 
- # zamiast do CMAKE_CURRENT_BINARY_DIR)
- 
- # LIBRARY_OUTPU_PATH
- # trzeba ustawic te zmienna, by ustalic wspolne miejsce gdzie CMake
- # wstawi wszystkie biblioteki(libraries), 
- # zamiast do CMAKE_CURRENT_BINARY_DIR)
-
- # PROJECT_NAME
- # nazwa projektu, ustawiana poprzez PROJECT(nazwa_projektu)
-
- # PROJECT_SOURCE_DIR
- # zawiera pełną ścieżkę do korzenia, dla katalogu w którym znajduje się projekt
-
-###########################################
-
-#ten folder bedzie zaincludowany
-
+#Te foldery zostaną zainkludowane:
 include_directories("${PROJECT_BINARY_DIR}")
+
+
 add_executable(Modem main.cpp)
 
-#ADD_SUBDIRECTORY (gtest-1.6.0)
-#enable_testing()
-#include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
-#add_executable( runUnitTests test.cpp )
-#target_link_libraries(runUnitTests gtest gtest_main)
-#add_test( runUnitTests runUnitTests )
 
 
+#zmienne globalne:
 
+# CMAKE_BINARY_DIR - jeśli się buduje in-source -> to samo co CMAKE_SOURCE_DIR
+#   				 w innym przpadku, jest to katalog nadrzędny całego drzewa budowania
 
+# CMAKE_SOURCE_DIR - katalog, gdzie cmake zaczyna się. np. najwyższy poziom katalogu źródłowego
+
+# EXECUTABLE_SOURCE_DIR - zmienna określająca wspólne miejsce, gdzie CMake powinien włożyć wszystkie pliki wykonywalne (zamiast CMAKE_CURRENT_BINARY_DIR)
+#			SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}\bin)
+
+#PROJECT_NAME - nazwa projektu, ustawiana przez komendę PROJECT()
+
+#PROJECT_SOURCE_DIR - zawiera pełną ścieżkę do korzenia, katalogu źródłowego projektu :D
+#						np. do najbliższego katalogu, gdzie CMakeLists.txt zawiera komendę PROJECT()
 

@@ -20,8 +20,10 @@ int main(int argc, char** argv)
     // testing::InitGoogleTest(&argc, argv);
     // return RUN_ALL_TESTS();
 
-    // TO DO:
-    // niepotrzebnie zamieniam 3+3i na Ae^jfi, skoro potem mnożę 2pi*f przez 3+3i a nie Ae^jfi. convertComplexToPolar jest niepotrzebne 
+
+    static const int M = 8; //  number of subcarriers
+    static const int N = 1024;
+    
     std::vector<int> inputBits;
     std::vector<double> frequencies;
     
@@ -34,33 +36,33 @@ int main(int argc, char** argv)
     std::cout << std::fixed ;
     //===================== MODULATOR ==================================================================================
     
-    std::vector<OFDM::Modulator> modulatorVector (OFDM::Modem::M);   //  table for 4 subcarriers
+    std::vector<OFDM::Modulator> modulatorVector (M);   //  table for 4 subcarriers
     std::vector<std::complex<double>> sumOfSubcarriers; //  vector for output samples of subcarriers
     std::vector<double> modulatorOutput;                //  real part of IDFT output
     
-    fillInputBitsVector(inputBits, OFDM::Modem::M, bitsPerSymbol);
+    fillInputBitsVector(inputBits, M, bitsPerSymbol);
     setInputBits(modulatorVector, inputBits, bitsPerSymbol);
     setRealAndImaginary(modulatorVector);
     convertComplexToPolar(modulatorVector);
-    fillFrequencies(modulatorVector, frequencies, OFDM::Modem::M);
+    fillFrequencies(modulatorVector, frequencies, M);
     setZ(modulatorVector);
-    createSubcarrier(modulatorVector, frequencies, time, ts, OFDM::Modem::N);
-    calculateIDFT(modulatorVector, sumOfSubcarriers, OFDM::Modem::N);
-    extractRealPart(sumOfSubcarriers, modulatorOutput, OFDM::Modem::N);
+    createSubcarrier(modulatorVector, frequencies, time, ts, N);
+    calculateIDFT(modulatorVector, sumOfSubcarriers, N);
+    extractRealPart(sumOfSubcarriers, modulatorOutput, N);
 
     //==================== DEMODULATOR =================================================================================
     
-    std::vector<OFDM::Demodulator> demodulatorVector (OFDM::Modem::M); // wektor 'podnosnych'
-    std::vector<double> demodulatorInput(OFDM::Modem::N);   // ciag probek wejsciowych na demodultorze
+    std::vector<OFDM::Demodulator> demodulatorVector (M); // wektor 'podnosnych'
+    std::vector<double> demodulatorInput(N);   // ciag probek wejsciowych na demodultorze
     std::vector<double> & DFTinput = demodulatorInput;  // alias
     std::vector<std::complex<double>> DFToutput;    // ciag wartosci zespolonych DFT
     std::vector<double> fAnalysis; // os czestotliwosci    
     std::copy(modulatorOutput.begin(), modulatorOutput.end(), demodulatorInput.begin());
 
-    setFAnalysis(fAnalysis, fs, OFDM::Modem::N);
-    calculateDFT(demodulatorVector, DFTinput, DFToutput, OFDM::Modem::N);
-    setSubcarriersVector (demodulatorVector, DFToutput, OFDM::Modulator::N);
-    extractZ(demodulatorVector, DFToutput, frequencies, ts, OFDM::Modem::N); // wyodrębnienie 4 podnośnych. Trzeba rozbić na mniejsze funkcje!!!!!!
+    setFAnalysis(fAnalysis, fs, N);
+    calculateDFT(demodulatorVector, DFTinput, DFToutput, N);
+    setSubcarriersVector (demodulatorVector, DFToutput, N);
+    extractZ(demodulatorVector, DFToutput, frequencies, ts, N); // wyodrębnienie 4 podnośnych. Trzeba rozbić na mniejsze funkcje!!!!!!
     setComplex(demodulatorVector);
     setBits(demodulatorVector);
 

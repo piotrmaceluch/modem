@@ -1,8 +1,8 @@
 #pragma once
 
-#include<iostream>
-#include<array>
-#include<complex>
+#include <iostream>
+#include <array>
+#include <complex>
 
 #include "Modem.hpp"
 
@@ -11,26 +11,30 @@ namespace OFDM
     class Modulator final : public Modem
     {
     public:
-        Modulator(  double real = 0.0,
-                    double imaginary = 0.0,
-                    double amplitude = 0.0,
-                    double phase = 0.0,
-                    double frequency = 0.0,
-                    double angularVelocity = 0.0,
-                    std::complex<double> generatorValue = {},
-                    std::complex<double> z = {},
-                    std::complex<double> complex = {} )
-    	            {
-                        this-> real = real;
-                        this-> imaginary = imaginary;
-                        this-> amplitude = amplitude;
-                        this-> phase = phase;
-                        this-> frequency = frequency;
-                        this-> angularVelocity = angularVelocity;
-                        this-> generatorValue = generatorValue;
-                        this-> z = z;
-                        this-> complex = complex;
-                    }
+        Modulator(  double _real = 0.0,
+                    double _imaginary = 0.0,
+                    double _amplitude = 0.0,
+                    double _phase = 0.0,
+                    double _frequency = 0.0,
+                    double _angularVelocity = 0.0,
+                    std::complex<double> _complex = {},
+                    std::complex<double> _generatorValue = {},
+                    std::complex<double> _z = {},
+                    std::vector<int> _fourBits = {},
+                    std::vector<std::complex<double>> _subcarrierSamples = {} 
+                 )  :   Modem(  _real,
+                                _imaginary,
+                                _amplitude,
+                                _phase,
+                                _frequency,
+                                _angularVelocity,
+                                _complex,
+                                _generatorValue,
+                                _z,
+                                _fourBits,
+                                _subcarrierSamples   )
+                    {}  
+
         Modulator(Modulator &Mod)
         {
             real = Mod.real;
@@ -43,7 +47,8 @@ namespace OFDM
             z = Mod.z;
             complex = Mod.complex;
         }
-        ~Modulator()
+        
+        virtual ~Modulator()
         {}
 
         void showValues() const;  
