@@ -4,14 +4,14 @@
 #include "Modulator.hpp"
 #include "Demodulator.hpp"
 
-// void showValues(std::array<OFDM::Modulator,4> &scArray);
+void showValues(const std::vector<OFDM::Modulator> &modulatorVector);
 
 template <typename T1> 
     void setFrequencies (std::vector<T1> &Vector, const std::vector<double> &frequencies);
 template <typename T>
     void setAngularVelocity (std::vector<T> &Vector, const std::vector<double> &frequencies);
 
-void fillInputBitsVector(std::vector<int> &inputBits, const int M, const int BPS);
+ void fillInputBitsVector(std::vector<int> &inputBits, const int M, const int BPS);
 void setInputBits (std::vector<OFDM::Modulator> &modulatorVector, 
     const std::array<int,16> &inputBits, const int bitsPerSymbol);
 void setTime (std::vector<double> &t, const int N, double const ts);

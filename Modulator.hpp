@@ -35,18 +35,18 @@ namespace OFDM
                                 _subcarrierSamples   )
                     {}  
 
-        Modulator(Modulator &Mod)
-        {
-            real = Mod.real;
-            imaginary = Mod.imaginary;
-            amplitude = Mod.amplitude;
-            phase = Mod.phase;
-            frequency = Mod.frequency;
-            angularVelocity = Mod.angularVelocity;
-            generatorValue = Mod.generatorValue;
-            z = Mod.z;
-            complex = Mod.complex;
-        }
+        // Modulator(Modulator &Mod)
+        // {
+        //     real = Mod.real;
+        //     imaginary = Mod.imaginary;
+        //     amplitude = Mod.amplitude;
+        //     phase = Mod.phase;
+        //     frequency = Mod.frequency;
+        //     angularVelocity = Mod.angularVelocity;
+        //     generatorValue = Mod.generatorValue;
+        //     z = Mod.z;
+        //     complex = Mod.complex;
+        // }
         
         virtual ~Modulator()
         {}

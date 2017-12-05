@@ -3,7 +3,6 @@
 #include <complex>
 #include <array>
 #include <iomanip>  // wyswietlenie liczb w zapisie decymalnym, oraz dla dokladnosci liczb zmiennoprzecinkowych
-#include <array>
 #include <vector>
 #include <cstdlib> // generowanie liczb pseudolosowych
 //#include "gtest/gtest.h"
@@ -21,8 +20,8 @@ int main(int argc, char** argv)
     // return RUN_ALL_TESTS();
 
 
-    static const int M = 8; //  number of subcarriers
-    static const int N = 1024;
+    const int M = 10; //  number of subcarriers
+    const int N = 1024;
     
     std::vector<int> inputBits;
     std::vector<double> frequencies;
@@ -40,7 +39,7 @@ int main(int argc, char** argv)
     std::vector<std::complex<double>> sumOfSubcarriers; //  vector for output samples of subcarriers
     std::vector<double> modulatorOutput;                //  real part of IDFT output
     
-    fillInputBitsVector(inputBits, M, bitsPerSymbol);
+     fillInputBitsVector(inputBits, M, bitsPerSymbol);
     setInputBits(modulatorVector, inputBits, bitsPerSymbol);
     setRealAndImaginary(modulatorVector);
     convertComplexToPolar(modulatorVector);
@@ -50,6 +49,7 @@ int main(int argc, char** argv)
     calculateIDFT(modulatorVector, sumOfSubcarriers, N);
     extractRealPart(sumOfSubcarriers, modulatorOutput, N);
 
+    //showValues(modulatorVector);
     //==================== DEMODULATOR =================================================================================
     
     std::vector<OFDM::Demodulator> demodulatorVector (M); // wektor 'podnosnych'

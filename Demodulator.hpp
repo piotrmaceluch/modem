@@ -35,18 +35,18 @@ namespace OFDM
                                     _subcarrierSamples 
                                 ) {}  
 
-        Demodulator(Demodulator &Dem)
-        {
-            real = Dem.real;
-            imaginary = Dem.imaginary;
-            amplitude = Dem.amplitude;
-            phase = Dem.phase;
-            frequency = Dem.frequency;
-            angularVelocity = Dem.angularVelocity;
-            generatorValue = Dem.generatorValue;
-            z = Dem.z;
-            complex = Dem.complex;
-        }
+        // Demodulator(Demodulator &Dem)
+        // {
+        //     real = Dem.real;
+        //     imaginary = Dem.imaginary;
+        //     amplitude = Dem.amplitude;
+        //     phase = Dem.phase;
+        //     frequency = Dem.frequency;
+        //     angularVelocity = Dem.angularVelocity;
+        //     generatorValue = Dem.generatorValue;
+        //     z = Dem.z;
+        //     complex = Dem.complex;
+        // }
 
         virtual ~Demodulator()
         {}
