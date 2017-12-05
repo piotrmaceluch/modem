@@ -26,7 +26,7 @@ namespace OFDM
         std::vector<int> fourBits;
         std::vector<std::complex<double>> subcarrierSamples;
         
-        
+    public:   
         Modem(  double _real = 0.0,
                 double _imaginary = 0.0,
                 double _amplitude = 0.0,

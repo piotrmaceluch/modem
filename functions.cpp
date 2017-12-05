@@ -2,7 +2,6 @@
 #include <string>
 #include <complex>
 #include <math.h>
-#include <array>
 #include <vector>
 #include <numeric>
 #include <cstdlib>
@@ -16,11 +15,11 @@
 
 //typedef std::array<OFDM::Modulator,4> scArray_;
 
-// void showValues(std::vector<OFDM::Modulator> &modulatorVector,)
+// void showValues(const std::vector<OFDM::Modulator> &modulatorVector)
 // {
-//     for (int i=0 ; i<scArray.size() ; i++)
+//     for (int i=0 ; i<modulatorVector.size() ; i++)
 //     {
-//         scArray[i].showValues();
+//         modulatorVector[i].showValues();
 //     }
 // }
 
@@ -41,6 +40,9 @@ void setAngularVelocity (std::vector<T> &Vector, const std::vector<double> &freq
     for (int i=0 ; i<Vector.size() ; i++)
         Vector[i].angularVelocity = 2*M_PI*Vector[i].frequency;
 }
+
+
+
 
 void fillInputBitsVector(std::vector<int> &inputBits, const int M, const int BPS)
 {
@@ -63,18 +65,6 @@ void setInputBits(std::vector<OFDM::Modulator> &modulatorVector, const std::vect
             modulatorVector[i].fourBits[j] = inputBits[k++];
         }
     }
-
-
-
-
-    // int k = 0;
-    // for (int i=0 ; i<modulatorVector.size() ; i++)
-    // {
-    //     for (int j=0 ; j<bitsPerSymbol ; j++)
-    //     {
-    //         modulatorVector[i].fourBits.push_back(inputBits.at(k++));
-    //     }
-    // }
 }
 
 void setRe(std::vector<OFDM::Modulator> &modulatorVector)
