@@ -8,29 +8,40 @@
 //#include "gtest/gtest.h"
 
 #include "functions.hpp"
-#include "functions.cpp"
-
 #include "Modem.hpp"
 #include "Modulator.hpp"
 #include "Demodulator.hpp"
 
+// ========= LAME VERSION =============
+// #include "functions.cpp"
+// #include "Modem.cpp"
+// #include "Modulator.cpp"
+// #include "Demodulator.cpp"
+//=====================================
+
 int main(int argc, char** argv)
 {
-    // testing::InitGoogleTest(&argc, argv);
-    // return RUN_ALL_TESTS();
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 
 
-    const int M = 10; //  number of subcarriers
-    const int N = 1024;
-    
-    std::vector<int> inputBits;
+    const int M = 8; //  number of subcarriers
+    const int N = 64;
+
+    std::vector<int> inputBits = {  0,0,0,0, 
+                                    1,1,1,1, 
+                                    0,1,1,0,
+                                    1,0,0,1,
+                                    1,0,0,0,
+                                    0,1,0,0,
+                                    0,0,1,0,
+                                    0,0,0,1  };
+                                    
     std::vector<double> frequencies;
-    
-    const double fs = 960; // 2x bigger than biggest freq. in whole signal ->    >= 2*60kHz
+    std::vector<double> time; // vector for time samples
+    const double fs = 960;  // 8*fmax
     const double ts = 1/fs;
     const int bitsPerSymbol = 4;
-    std::vector<double> time; //  time array for samples
-
 
     std::cout << std::fixed ;
     //===================== MODULATOR ==================================================================================
@@ -38,19 +49,23 @@ int main(int argc, char** argv)
     std::vector<OFDM::Modulator> modulatorVector (M);   //  table for 4 subcarriers
     std::vector<std::complex<double>> sumOfSubcarriers; //  vector for output samples of subcarriers
     std::vector<double> modulatorOutput;                //  real part of IDFT output
-    
-     fillInputBitsVector(inputBits, M, bitsPerSymbol);
-    setInputBits(modulatorVector, inputBits, bitsPerSymbol);
+
+    //fillInputBitsVector(inputBits, M, bitsPerSymbol); // tylko, gdy chcę, by modulator wypełniał wektor inputBits zależnie od ilości podnośnych
+
+    setInputBits(modulatorVector, inputBits);
     setRealAndImaginary(modulatorVector);
     convertComplexToPolar(modulatorVector);
-    fillFrequencies(modulatorVector, frequencies, M);
+    fillVectorOfFrequencies(modulatorVector, frequencies, M);
     setZ(modulatorVector);
-    createSubcarrier(modulatorVector, frequencies, time, ts, N);
+    setFrequencies(modulatorVector, frequencies);
+    setTime(time, N, ts);
+    setAngularVelocities(modulatorVector);
+    createSubcarriers(modulatorVector, time, N);
     calculateIDFT(modulatorVector, sumOfSubcarriers, N);
     extractRealPart(sumOfSubcarriers, modulatorOutput, N);
 
-    //showValues(modulatorVector);
-    //==================== DEMODULATOR =================================================================================
+
+    // //==================== DEMODULATOR =================================================================================
     
     std::vector<OFDM::Demodulator> demodulatorVector (M); // wektor 'podnosnych'
     std::vector<double> demodulatorInput(N);   // ciag probek wejsciowych na demodultorze
@@ -61,40 +76,22 @@ int main(int argc, char** argv)
 
     setFAnalysis(fAnalysis, fs, N);
     calculateDFT(demodulatorVector, DFTinput, DFToutput, N);
+	
+    setFrequencies(demodulatorVector, fAnalysis, DFToutput);
+    setAngularVelocities(demodulatorVector);
     setSubcarriersVector (demodulatorVector, DFToutput, N);
-    extractZ(demodulatorVector, DFToutput, frequencies, ts, N); // wyodrębnienie 4 podnośnych. Trzeba rozbić na mniejsze funkcje!!!!!!
+    extractZ (demodulatorVector);
+    extractAmplitude (demodulatorVector, N);
+    extractPhase (demodulatorVector);
     setComplex(demodulatorVector);
     setBits(demodulatorVector);
 
     std::cout << "====== Modulator: =================================" << std::endl << std::endl;
-    for (int i=0 ; i<modulatorVector.size() ; i++)
-    {
-        std::cout << "Podnosna nr: " << i 
-            << " \tCzestotliwosc " << modulatorVector[i].frequency
-            //<< ": \tGenerator value: " << modulatorVector[i].generatorValue
-            << ": \tAmplituda " << modulatorVector[i].amplitude
-            << ": \tFaza " << modulatorVector[i].phase 
-            << ": \tBity ";
-            for (int k=0 ; k<modulatorVector[i].fourBits.size() ; k++)
-                std::cout << modulatorVector[i].fourBits[k];
-        std::cout << std::endl;
-    }
-
+    showValues(modulatorVector);
 
     std::cout << std::endl;
 
     std::cout << "====== Demodulator: ===================================" << std::endl << std::endl;
-    for (int i=0 ; i<demodulatorVector.size() ; i++)
-    {
-        std::cout << "Podnosna nr: " << i 
-            << " \tCzestotliwosc " << demodulatorVector[i].frequency
-           //<< ": \tGenerator value: " << demodulatorVector[i].generatorValue
-            << ": \tAmplituda " << demodulatorVector[i].amplitude
-            << ": \tFaza " << demodulatorVector[i].phase
-            << ": \tBity ";
-            for (int k=0 ; k<demodulatorVector[i].fourBits.size() ; k++)
-                std::cout << demodulatorVector[i].fourBits[k];
-        std::cout << std::endl;
-    }
+    showValues(demodulatorVector);
 
 }

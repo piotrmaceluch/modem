@@ -5,13 +5,21 @@
 #include<complex>
 #include<vector>
 
+
+namespace GLOBAL
+{
+    static int bitsCounter = 0;
+    static int freqCounter = 0;
+}
+
+
+
 namespace OFDM
 {
-
     class Modem
     {
-    public:
-        
+    protected:
+        int bitsPerSymbol;
         double real;
         double imaginary;
         double amplitude;
@@ -27,7 +35,8 @@ namespace OFDM
         std::vector<std::complex<double>> subcarrierSamples;
         
     public:   
-        Modem(  double _real = 0.0,
+        Modem(  int _bitsPerSymbol = 4,
+                double _real = 0.0,
                 double _imaginary = 0.0,
                 double _amplitude = 0.0,
                 double _phase = 0.0,
@@ -39,7 +48,8 @@ namespace OFDM
                 std::vector<int> _fourBits = {},
                 std::vector<std::complex<double>> _subcarrierSamples = {} )  
 
-                :   real(_real),
+                :   bitsPerSymbol(_bitsPerSymbol),
+                    real(_real),
                     imaginary(_imaginary),
                     amplitude(_amplitude),
                     phase(_phase),
@@ -54,6 +64,7 @@ namespace OFDM
                 
         Modem(Modem &Mod)
         {
+            bitsPerSymbol = Mod.bitsPerSymbol;
             real = Mod.real;
             imaginary = Mod.imaginary;
             amplitude = Mod.amplitude;
@@ -65,6 +76,8 @@ namespace OFDM
             complex = Mod.complex;
         }
         
+        //void showValues() const;
+
         virtual ~Modem()
         {}
         

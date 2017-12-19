@@ -8,10 +8,11 @@
 
 namespace OFDM
 {
-    class Demodulator final : public Modem
+    class Demodulator final : protected Modem
     {
     public:
-        Demodulator(    double _real = 0.0,
+        Demodulator(    int _bitsPerSymbol = 4,
+                        double _real = 0.0,
                         double _imaginary = 0.0,
                         double _amplitude = 0.0,
                         double _phase = 0.0,
@@ -22,7 +23,8 @@ namespace OFDM
                         std::complex<double> _z = {},
                         std::vector<int> _fourBits = {},
                         std::vector<std::complex<double>> _subcarrierSamples = {} 
-                    )   :   Modem(  _real,
+                    )   :   Modem(  _bitsPerSymbol,
+                                    _real,
                                     _imaginary,
                                     _amplitude,
                                     _phase,
@@ -47,9 +49,17 @@ namespace OFDM
         //     z = Dem.z;
         //     complex = Dem.complex;
         // }
-
         virtual ~Demodulator()
         {}
+
+        void setFrequency(const double freq);
+        void setAngularVelocity();
+        std::complex<double> setGeneratorValue(const std::vector<std::complex<double>> &DFToutput, int i);
+        void setZ();
+        void setAmplitude(const int N);
+        void setPhase();
+        void setComplex();
+        void setBits();
 
         void showValues() const;
     }; //  class Demodulator

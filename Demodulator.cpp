@@ -1,29 +1,102 @@
-#include <iostream>
-#include <string>
-
 #include "Demodulator.hpp"
 
-void OFDM::Deodulator::showValues() const
-{	
-    std::cout << std::endl;
-    std::cout << "--------------------" << std::endl;
-    std::cout << "Input bits: \t";
-    for (int i=0 ; i<4 ; i++)
+void OFDM::Demodulator::setFrequency(const double freq)
+{
+    frequency = freq;
+}
+
+void OFDM::Demodulator::setAngularVelocity()
+{
+    angularVelocity = 2 * M_PI * frequency;
+}
+
+std::complex<double> OFDM::Demodulator::setGeneratorValue(const std::vector<std::complex<double>> &DFToutput, int i)
+{
+    generatorValue = DFToutput[i]; 
+}
+
+void OFDM::Demodulator::setZ()
+{
+    z = generatorValue;
+}
+
+void OFDM::Demodulator::setAmplitude(const int N)
+{
+    double ratio = 2.0/N;
+    amplitude = ratio * std::abs(z);
+}
+
+void OFDM::Demodulator::setPhase()
+{
+    phase = std::arg(z);
+}
+
+void OFDM::Demodulator::setComplex()
+{
+    double a = amplitude * cos(phase);
+    double b = amplitude * sin(phase);
+    complex = {a,b};
+}
+
+void OFDM::Demodulator::setBits()
+{
+    fourBits.resize(4);
+        
+    if (complex.real() < -2 )
     {
-        std::cout << inputBits[i];
+        fourBits[0] = 0;
+        fourBits[1] = 0;
     }
-    std::cout << std::endl;
-    std::cout << "Real: \t\t" << complex.real() << std::endl;
-    std::cout << "Imaginary: \t" << complex.imag() << std::endl;
-    std::cout << "Amplitude: \t" << amplitude << std::endl;
-    std::cout << "Phase[radians]: " << phase << std::endl;
-    std::cout << "Z: \t\t" << z  << " ["<< amplitude << "e^" << phase << "]" << std::endl;
-    std::cout << "Frequency[kHz]: " << frequency << std::endl;
-    std::cout << "AngularVelocity: " << angularVelocity << std::endl;
-    std::cout << "GeneratorValue: " << std::endl;
-    for (int i=0 ; i<N ; i++)
+    if (complex.real() >= -2 && complex.real() < 0)
     {
-        std::cout << this->generatorValue[i] << std::endl;
+        fourBits[0] = 0;
+        fourBits[1] = 1;
     }
-    std::cout << std::endl;
+    if (complex.real() >= 0 && complex.real() < 2)
+    {
+        fourBits[0] = 1;
+        fourBits[1] = 1;
+    }
+    if (complex.real() >= 2)
+    {
+        fourBits[0] = 1;
+        fourBits[1] = 0;
+    }
+
+
+
+    if (complex.imag() < -2)
+    {
+        fourBits[2] = 0;
+        fourBits[3] = 0;
+    }
+    if (complex.imag() >= -2 && complex.imag() < 0)
+    {
+        fourBits[2] = 0;
+        fourBits[3] = 1;
+    }
+    if (complex.imag() >= 0 && complex.imag( ) < 2)
+    {
+        fourBits[2] = 1;
+        fourBits[3] = 1;
+    }
+    if (complex.imag() >= 2 )
+    {
+        fourBits[2] = 1;
+        fourBits[3] = 0;
+}
+}
+
+void OFDM::Demodulator::showValues() const
+{ 
+    std::cout << ":   Bity ";
+    for (int k=0 ; k<fourBits.size() ; k++)
+    {
+        std::cout << fourBits[k];
+    }
+    std::cout   << "    Complex " << complex
+                << " \tCzestotliwosc " << frequency
+                //<< ": \tGenerator value: " << generatorValue
+                << ": \tAmplituda " << amplitude
+                << ": \tFaza " << phase << std::endl;
 }
