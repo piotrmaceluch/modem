@@ -18,7 +18,6 @@ function T = setInputZ(fourBits)
     
     
     
-    
     if (fourBits(3) == 0 && fourBits(4) == 0)
         Im = (-3.0);
     endif

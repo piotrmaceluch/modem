@@ -10,7 +10,7 @@ void OFDM::Demodulator::setAngularVelocity()
     angularVelocity = 2 * M_PI * frequency;
 }
 
-std::complex<double> OFDM::Demodulator::setGeneratorValue(const std::vector<std::complex<double>> &DFToutput, int i)
+void OFDM::Demodulator::setGeneratorValue(const std::vector<std::complex<double>> &DFToutput, int i)
 {
     generatorValue = DFToutput[i]; 
 }
@@ -84,19 +84,53 @@ void OFDM::Demodulator::setBits()
     {
         fourBits[2] = 1;
         fourBits[3] = 0;
-}
+	}
 }
 
 void OFDM::Demodulator::showValues() const
 { 
     std::cout << ":   Bity ";
-    for (int k=0 ; k<fourBits.size() ; k++)
+    for (auto &k : fourBits)
     {
-        std::cout << fourBits[k];
+        std::cout << k;
     }
-    std::cout   << "    Complex " << complex
+    std::cout   << " \tZ " << complex <<"   " 
                 << " \tCzestotliwosc " << frequency
                 //<< ": \tGenerator value: " << generatorValue
                 << ": \tAmplituda " << amplitude
                 << ": \tFaza " << phase << std::endl;
+}
+
+void OFDM::Demodulator::sendDemodulatorValuesToFile(int N)
+{
+
+
+    //   ODPOWIEDNIA KOLEJNOŚĆ
+    //   ODPOWIEDNIE WARTOŚCI
+        std::ofstream myfile1;
+        myfile1.open("c_dem_frequency", std::fstream::app);
+        myfile1 << frequency;
+        myfile1 << "\n";
+        myfile1.close();
+        
+        std::ofstream myfile4;
+        myfile4.open("c_dem_amplitude", std::fstream::app);
+        myfile4 << amplitude;
+        myfile4 << "\n";
+        myfile4.close();
+
+        std::ofstream myfile5;
+        myfile5.open("c_dem_phase", std::fstream::app);
+        myfile5 << phase;
+        myfile5 << "\n";
+        myfile5.close();
+
+        std::ofstream myfile6;
+        myfile6.open("c_dem_bits", std::fstream::app);
+        for (int i=0 ; i<bitsPerSymbol ; i++)
+        {
+            myfile6 << int(fourBits[i]);
+            myfile6 << "\n";
+        }
+        myfile6.close();
 }

@@ -3,6 +3,8 @@
 #include<iostream>
 #include<array>
 #include<complex>
+#include <string>
+#include <fstream>
 
 #include "Modem.hpp"
 
@@ -54,7 +56,7 @@ namespace OFDM
 
         void setFrequency(const double freq);
         void setAngularVelocity();
-        std::complex<double> setGeneratorValue(const std::vector<std::complex<double>> &DFToutput, int i);
+        void setGeneratorValue(const std::vector<std::complex<double>> &DFToutput, int i);
         void setZ();
         void setAmplitude(const int N);
         void setPhase();
@@ -62,5 +64,7 @@ namespace OFDM
         void setBits();
 
         void showValues() const;
+        void sendDemodulatorValuesToFile(int N);
+        
     }; //  class Demodulator
 } // namespace OFDM

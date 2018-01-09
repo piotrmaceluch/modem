@@ -4,24 +4,25 @@
 #include <array>
 #include <complex>
 #include <string>
+#include <fstream>
 
 #include "Modem.hpp"
 
+
 namespace OFDM
 {
-    class Modulator final : protected Modem
+    class Modulator final : public Modem
     {
     public:
-        
-
+    
         Modulator(  int _bitsPerSymbol = 4,
-                    double _real = 0.0,         // ALBO COMPLEX, ALBO REAL + IMAGINARY. JEDNO WYJEBAĆ
-                    double _imaginary = 0.0,    // ALBO COMPLEX, ALBO REAL + IMAGINARY. JEDNO WYJEBAĆ
+                    double _real = 0.0,
+                    double _imaginary = 0.0,
                     double _amplitude = 0.0,
                     double _phase = 0.0,
                     double _frequency = 0.0,
                     double _angularVelocity = 0.0,
-                    std::complex<double> _complex = {}, // ALBO COMPLEX, ALBO REAL + IMAGINARY. JEDNO WYJEBAĆ
+                    std::complex<double> _complex = {},
                     std::complex<double> _generatorValue = {},
                     std::complex<double> _z = {},
                     std::vector<int> _fourBits = {},
@@ -67,5 +68,6 @@ namespace OFDM
         void createSubcarrier(std::vector<double> &time, const int N);
         
         void showValues() const;
+        void sendModulatorValuesToFiles(int N);
     }; //  class Modulator
 } //  namespace OFDM

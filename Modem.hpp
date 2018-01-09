@@ -6,14 +6,6 @@
 #include<vector>
 
 
-namespace GLOBAL
-{
-    static int bitsCounter = 0;
-    static int freqCounter = 0;
-}
-
-
-
 namespace OFDM
 {
     class Modem

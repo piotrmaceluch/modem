@@ -1,6 +1,13 @@
+#include <iomanip>
+
 #include "Modulator.hpp"
 
 
+namespace GLOBAL
+{
+    static int bitsCounter = 0;
+    static int freqCounter = 0;
+}
 
 void OFDM::Modulator::setInputBits(const std::vector<int> &inputBits)
 {
@@ -9,6 +16,7 @@ void OFDM::Modulator::setInputBits(const std::vector<int> &inputBits)
         fourBits.push_back(inputBits[GLOBAL::bitsCounter++]);
     }
 }
+
 
 void OFDM::Modulator::setReal()
 {
@@ -89,18 +97,88 @@ std::complex<double> OFDM::Modulator::returnSubcarrierSample(int i)
     return subcarrierSamples[i];
 }
 
-
 void OFDM::Modulator::showValues() const
 { 
     std::cout << ":   Bity ";
-    for (int k=0 ; k<fourBits.size() ; k++)
+    for (auto &k : fourBits)
     {
-        std::cout << fourBits[k];
+        std::cout << k;
     }
-    std::cout   << "    Complex " << complex
+    std::cout   << " \tZ " << complex <<"   " 
                 << " \tCzestotliwosc " << frequency
                 //<< ": \tGenerator value: " << generatorValue
                 << ": \tAmplituda " << amplitude
                 << ": \tFaza " << phase << std::endl;
 }
 
+void OFDM::Modulator::sendModulatorValuesToFiles(int N)
+{
+        std::ofstream myfile;
+        myfile.open("c_mod_bits", std::fstream::app);
+        for (int i=0 ; i<bitsPerSymbol ; i++)
+        {
+            myfile << int(fourBits[i]);
+            myfile << "\n";
+        }
+        myfile.close();
+
+        std::ofstream myfile1;
+        myfile1.open("c_mod_real", std::fstream::app);
+        myfile1 << complex.real();
+        myfile1 << "\n";
+        myfile1.close();
+
+        std::ofstream myfile2;
+        myfile2.open("c_mod_imaginary", std::fstream::app);
+        myfile2 << complex.imag();
+        myfile2 << "\n";
+        myfile2.close();
+
+        std::ofstream myfile3;
+        myfile3.open("c_mod_complex", std::fstream::app);
+        myfile3 << complex;
+        myfile3 << "\n";
+        myfile3.close();
+
+        std::ofstream myfile4;
+        myfile4.open("c_mod_amplitude", std::fstream::app);
+        myfile4 << amplitude;
+        myfile4 << "\n";
+        myfile4.close();
+
+        std::ofstream myfile5;
+        myfile5.open("c_mod_phase", std::fstream::app);
+        myfile5 << phase;
+        myfile5 << "\n";
+        myfile5.close();
+
+        std::ofstream myfile6;
+        myfile6.open("c_mod_frequency", std::fstream::app);
+        myfile6 << frequency;
+        myfile6 << "\n";
+        myfile6.close();
+
+        std::ofstream myfile7;
+        myfile7.open("c_mod_angularVelocity", std::fstream::app);
+        myfile7 << angularVelocity;
+        myfile7 << "\n";
+        myfile7.close();
+
+        std::ofstream myfile8;
+        myfile8.open("c_mod_rSubcarrierSamples", std::fstream::app);
+        for(int i=0 ; i<N ; i++)
+        {
+            myfile8 << std::real(subcarrierSamples[i]);
+            myfile8 << "\n";
+        }
+        myfile8.close();
+
+        std::ofstream myfile9;
+        myfile9.open("c_mod_iSubcarrierSamples", std::fstream::app);
+        for(int i=0 ; i<N ; i++)
+        {
+            myfile9 << std::imag(subcarrierSamples[i]);
+            myfile9 << "\n";
+        }
+        myfile9.close();
+}

@@ -6,7 +6,7 @@
 //     for (int k=0 ; k<fourBits.size() ; k++)
 //     {
 //         std::cout << fourBits[k];
-//     }
+//     }s
 //     std::cout   << "    Complex " << complex
 //                 << " \tCzestotliwosc " << frequency
 //                 //<< ": \tGenerator value: " << generatorValue
