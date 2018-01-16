@@ -7,7 +7,8 @@
 #include <gtest/gtest.h>
 #include <fstream>
 
-#include "functions.hpp"
+#include "Modulator_functions.hpp"
+#include "Demodulator_functions.hpp"
 #include "Modem.hpp"
 #include "Modulator.hpp"
 #include "Demodulator.hpp"
@@ -75,7 +76,7 @@ int main(int argc, char **argv)
     extractPhase (demodulatorVector);
     setComplex(demodulatorVector);
     setBits(demodulatorVector);
-    sendDemodulatorValuesToFiles(demodulatorVector, demodulatorInput, DFToutput, M, N);
+    sendDemodulatorValuesToFiles(demodulatorVector, demodulatorInput, DFToutput, N);
 
 
 

@@ -64,7 +64,7 @@ namespace OFDM
         void setBits();
 
         void showValues() const;
-        void sendDemodulatorValuesToFile(int N);
+        void sendDemodulatorValuesToFile();
         
     }; //  class Demodulator
 } // namespace OFDM

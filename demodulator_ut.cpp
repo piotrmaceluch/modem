@@ -6,7 +6,7 @@
 
 #include "Modem.hpp"
 #include "Demodulator.hpp"
-#include "functions.hpp"
+#include "Demodulator_functions.hpp"
 
 
 namespace modem_ut
