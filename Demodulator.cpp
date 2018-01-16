@@ -101,7 +101,7 @@ void OFDM::Demodulator::showValues() const
                 << ": \tFaza " << phase << std::endl;
 }
 
-void OFDM::Demodulator::sendDemodulatorValuesToFile(int N)
+void OFDM::Demodulator::sendDemodulatorValuesToFile()
 {
 
 
